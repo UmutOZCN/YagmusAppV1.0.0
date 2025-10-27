@@ -10,9 +10,6 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
 
-import express from "express";
-import cors from "cors";
-import pool from "./db.js"; // varsa, yoksa geçici stub ekle
 
 const app = express();
 

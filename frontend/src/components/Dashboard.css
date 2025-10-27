@@ -357,3 +357,80 @@
   }
   .compose-card form { gap: 12px; }
 }
+
+/* === RESPONSIVE — DASHBOARD === */
+/* Tablet yatay / küçük laptop */
+@media (max-width: 1024px) {
+  .dashboard { padding: 22px 16px 40px; }
+
+  .streak-card,
+  .compose-card,
+  .notes-list {
+    max-width: 860px;
+    margin: 22px auto;
+    border-radius: 14px;
+  }
+
+  .streak-card { padding: 32px 26px; }
+  .compose-card { padding: 26px 22px; }
+  .notes-list  { padding: 26px 22px; }
+
+  .note-content { line-height: 1.55; }
+}
+
+/* Tablet dikey / büyük telefon */
+@media (max-width: 768px) {
+  .dashboard { padding: 18px 12px 32px; }
+
+  .streak-card,
+  .compose-card,
+  .notes-list {
+    max-width: 680px;
+    margin: 18px auto;
+    border-radius: 12px;
+  }
+
+  .streak-card h2,
+  .compose-card h2,
+  .notes-list h2 {
+    font-size: 1.15rem;
+    margin-bottom: 14px;
+  }
+
+  /* Not formu – tek sütun, büyük dokunma alanı */
+  .compose-card form { gap: 12px; }
+  .compose-card textarea { min-height: 110px; font-size: 0.98rem; }
+  .compose-card button[type="submit"] { padding: 13px; font-size: 0.98rem; }
+
+  /* Not kartı başlığı küçük ekranda alt satıra insin */
+  .note-header { flex-wrap: wrap; gap: 4px; }
+  .note-date { flex-basis: 100%; text-align: left; margin-top: 2px; }
+}
+
+/* Küçük telefon */
+@media (max-width: 480px) {
+  .dashboard { padding: 12px 10px 26px; }
+
+  .streak-card,
+  .compose-card,
+  .notes-list {
+    margin: 14px 6px;
+    padding: 18px 14px;
+    border-radius: 10px;
+  }
+
+  .compose-card textarea { min-height: 100px; }
+  .notes-list .note-card { padding: 14px; border-radius: 10px; }
+  .note-author { font-size: 0.95rem; }
+  .note-date   { font-size: 0.82rem; opacity: 0.85; }
+  .note-content { font-size: 0.98rem; }
+}
+
+/* Çok küçük cihaz / dar çentik */
+@media (max-width: 360px) {
+  .streak-card,
+  .compose-card,
+  .notes-list { padding: 14px 12px; }
+  .compose-card button[type="submit"] { padding: 12px; }
+}
+

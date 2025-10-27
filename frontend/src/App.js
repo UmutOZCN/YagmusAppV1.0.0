@@ -4,14 +4,6 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import axios from 'axios';
 
-const API =
-  process.env.REACT_APP_API_URL || // Netlify/Railway env
-  import.meta?.env?.VITE_API_URL || // Vite ise
-  "http://localhost:3000";          // local fallback
-
-axios.defaults.baseURL = API;
-axios.defaults.headers.common["Content-Type"] = "application/json";
-
 // Configure axios defaults
 axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'https://yagmusappv100-backend-production.up.railway.app';
 axios.interceptors.request.use(

@@ -1,4 +1,4 @@
-// backend/server.js  (CommonJS sürümü)
+// backend/server.js  (CommonJS + db wrapper uyumlu)
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
@@ -9,16 +9,17 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
-// --- CORS ayarları ---
+// Frontend domain(ler)ini burada tanımla
 const FRONTEND_ORIGINS = [
   process.env.FRONTEND_URL || '',
+  'https://yagmusappv100-frontend-production.up.railway.app',
   'https://yagmusapp.com',
   'http://localhost:3000'
 ].filter(Boolean);
 
 app.use(cors({ origin: FRONTEND_ORIGINS }));
 
-// --- DB yardımcı fonksiyonlar ---
+// ---- DB yardımcı (callback -> promise) ----
 function dbGet(sql, params = []) {
   return new Promise((resolve, reject) => {
     db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)));
@@ -35,18 +36,21 @@ function dbRun(sql, params = []) {
   });
 }
 
-// --- Healthcheck ---
+// ---- Health ----
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
-// --- Notes: listele ---
+// ---- Notes: listele ----
+// DÖNÜŞ ŞEMASI: { id, userId, username, content, createdAt, date }
 app.get('/api/notes', async (_req, res) => {
   try {
     const q = `
-      SELECT n.id,
-             n.userId AS "userId",
-             n.content,
-             n.createdAt AS "createdAt",
-             COALESCE(u.username, '') AS username
+      SELECT
+        n.id,
+        n.userId      AS "userId",
+        n.content,
+        n.createdAt   AS "createdAt",
+        n.date        AS "date",
+        COALESCE(u.username, '') AS username
       FROM notes n
       LEFT JOIN users u ON u.id = n.userId
       ORDER BY n.createdAt DESC
@@ -59,18 +63,25 @@ app.get('/api/notes', async (_req, res) => {
   }
 });
 
-// --- Notes: ekle ---
+// ---- Notes: ekle ----
+// NOT: Şeman gereği 'date' NOT NULL (SQLite ve PostgreSQL tablolarda) — bu yüzden ekliyoruz. :contentReference[oaicite:1]{index=1}
 app.post('/api/notes', async (req, res) => {
   try {
     const { userId, content } = req.body;
     if (!userId || !content) return res.status(400).json({ message: 'Missing fields' });
 
-    const ins = `INSERT INTO notes (userId, content) VALUES (?, ?)`;
-    const info = await dbRun(ins, [userId, content]);
+    // YYYY-MM-DD (her iki veritabanı için güvenli)
+    const ymd = new Date().toISOString().slice(0, 10);
+
+    // SQLite tarzı placeholder; db.js PG modunda otomatik $1.. dönüştürüyor
+    const ins = `INSERT INTO notes (userId, content, date) VALUES (?, ?, ?)`;
+    const info = await dbRun(ins, [userId, content, ymd]);
     const lastID = info?.lastID;
+
     const sel = `
-      SELECT n.id, n.userId, n.content, n.createdAt,
-             COALESCE(u.username, '') AS username
+      SELECT
+        n.id, n.userId, n.content, n.createdAt, n.date,
+        COALESCE(u.username, '') AS username
       FROM notes n
       LEFT JOIN users u ON u.id = n.userId
       WHERE n.id = ?
@@ -83,7 +94,7 @@ app.post('/api/notes', async (req, res) => {
   }
 });
 
-// --- Auth: kayıt (maks 2 kullanıcı) ---
+// ---- Auth: register (max 2 kullanıcı) ----
 app.post('/api/register', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -108,7 +119,7 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// --- Auth: giriş ---
+// ---- Auth: login ----
 app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -129,7 +140,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// --- Error middleware ---
+// ---- Hata yakalayıcı ----
 app.use((err, _req, res, _next) => {
   console.error('API error:', err);
   res.status(500).json({ message: err.message || 'Server error' });

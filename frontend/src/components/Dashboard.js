@@ -10,13 +10,6 @@ const Dashboard = () => {
   const [fixing, setFixing] = useState(false);
   const [user, setUser] = useState(null);
   
-    setNotes(parsedNotes);
-  } catch (err) {
-    console.error('Error fetching notes:', err);
-    setNotes([]); // hata olursa boş diziye döner
-  }
-};
-
   useEffect(() => {
     const userData = localStorage.getItem('user');
     if (userData) {

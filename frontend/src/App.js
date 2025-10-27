@@ -1,69 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './components/Login';
-import Dashboard from './components/Dashboard';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import Login from "./components/Login";
+import Dashboard from "./components/Dashboard";
+import "./index.css";
 
-// Configure axios defaults
-axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'https://yagmusappv100-backend-production.up.railway.app';
-axios.interceptors.request.use(
-  config => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  error => Promise.reject(error)
-);
-
-function App() {
+export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setIsAuthenticated(true);
-    }
-    setLoading(false);
+    const token = localStorage.getItem("token");
+    setIsAuthenticated(!!token);
   }, []);
 
-  if (loading) {
-    return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh',
-        color: 'white',
-        fontSize: '24px'
-      }}>
-        Yükleniyor...
-      </div>
-    );
-  }
-
   return (
-    <Router>
-      <Routes>
-        <Route 
-          path="/login" 
-          element={
-            isAuthenticated ? <Navigate to="/dashboard" /> : <Login setIsAuthenticated={setIsAuthenticated} />
-          } 
-        />
-        <Route 
-          path="/dashboard" 
-          element={
-            isAuthenticated ? <Dashboard /> : <Navigate to="/login" />
-          } 
-        />
-        <Route path="/" element={<Navigate to="/dashboard" />} />
-      </Routes>
-    </Router>
+    <div className="app">
+      {isAuthenticated ? (
+        <Dashboard />
+      ) : (
+        <Login setIsAuthenticated={setIsAuthenticated} />
+      )}
+    </div>
   );
 }
-
-export default App;
-

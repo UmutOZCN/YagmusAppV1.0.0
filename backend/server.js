@@ -93,10 +93,31 @@ app.post('/api/notes', async (req, res) => {
       return res.status(400).json({ message: 'Missing fields' });
 
     const ymd = new Date().toISOString().slice(0, 10);
-    const ins = `INSERT INTO notes (userId, content, date) VALUES (?, ?, ?)`;
-    const info = await dbRun(ins, [userId, content, ymd]);
-    const lastID = info?.lastID;
 
+    // 🔹 aynı gün daha önce not var mı kontrolü
+    const exists = await new Promise((resolve, reject) => {
+      db.get(
+        `SELECT id FROM notes WHERE userId = ? AND date = ? LIMIT 1`,
+        [userId, ymd],
+        (err, row) => (err ? reject(err) : resolve(!!row))
+      );
+    });
+
+    if (exists) {
+      return res
+        .status(409)
+        .json({ message: 'Bu kullanıcı bugün zaten bir not gönderdi.' });
+    }
+
+    // 🔹 yoksa ekle
+    const ins = `INSERT INTO notes (userId, content, date) VALUES (?, ?, ?)`;
+    const info = await new Promise((resolve, reject) => {
+      db.run(ins, [userId, content, ymd], (err, info) =>
+        err ? reject(err) : resolve(info)
+      );
+    });
+
+    const lastID = info?.lastID;
     const sel = `
       SELECT n.id, n.userId, n.content, n.createdAt, n.date,
              COALESCE(u.username, '') AS username
@@ -104,13 +125,17 @@ app.post('/api/notes', async (req, res) => {
       LEFT JOIN users u ON u.id = n.userId
       WHERE n.id = ?
     `;
-    const inserted = await dbGet(sel, [lastID]);
+    const inserted = await new Promise((resolve, reject) => {
+      db.get(sel, [lastID], (err, row) => (err ? reject(err) : resolve(row)));
+    });
+
     res.status(201).json(inserted);
   } catch (e) {
     console.error('POST /api/notes', e);
     res.status(500).json({ message: e.message || 'Server error' });
   }
 });
+
 
 /* ---------- AUTH: REGISTER ---------- */
 app.post('/api/register', async (req, res) => {

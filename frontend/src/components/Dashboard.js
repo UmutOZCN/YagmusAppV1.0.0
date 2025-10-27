@@ -10,6 +10,27 @@ const Dashboard = () => {
   const [fixing, setFixing] = useState(false);
   const [user, setUser] = useState(null);
 
+
+  
+  const fetchNotes = async () => {
+  try {
+    const response = await axios.get('/api/notes');
+    const data = response.data;
+
+    // data.notes varsa onu, yoksa direkt data'yı al
+    const parsedNotes = Array.isArray(data?.notes) 
+      ? data.notes 
+      : (Array.isArray(data) ? data : []);
+
+    setNotes(parsedNotes);
+  } catch (err) {
+    console.error('Error fetching notes:', err);
+    setNotes([]); // hata olursa boş diziye döner
+  }
+};
+
+  
+
   useEffect(() => {
     const userData = localStorage.getItem('user');
     if (userData) {

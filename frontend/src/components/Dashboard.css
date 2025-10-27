@@ -434,3 +434,11 @@
   .compose-card button[type="submit"] { padding: 12px; }
 }
 
+/* iOS çentik güvenli alanları */
+@supports (padding: max(0px)) {
+  .dashboard {
+    padding-top: calc(28px + env(safe-area-inset-top));
+    padding-bottom: calc(48px + env(safe-area-inset-bottom));
+  }
+}
+

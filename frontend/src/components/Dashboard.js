@@ -9,10 +9,33 @@ const Dashboard = () => {
   const [submitting, setSubmitting] = useState(false);
   const [fixing, setFixing] = useState(false);
   const [user, setUser] = useState(null);
+  
+    setNotes(parsedNotes);
+  } catch (err) {
+    console.error('Error fetching notes:', err);
+    setNotes([]); // hata olursa boş diziye döner
+  }
+};
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+    fetchNotes();
+    fetchStreak();
+    // Refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchNotes();
+      fetchStreak();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
 
   
-  const fetchNotes = async () => {
+
+const fetchNotes = async () => {
   try {
     const response = await axios.get('/api/notes');
     const data = response.data;
@@ -30,30 +53,6 @@ const Dashboard = () => {
 };
 
   
-
-  useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
-    fetchNotes();
-    fetchStreak();
-    // Refresh every 30 seconds
-    const interval = setInterval(() => {
-      fetchNotes();
-      fetchStreak();
-    }, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const fetchNotes = async () => {
-    try {
-      const response = await axios.get('/api/notes');
-      setNotes(response.data);
-    } catch (err) {
-      console.error('Error fetching notes:', err);
-    }
-  };
 
   const fetchStreak = async () => {
     try {

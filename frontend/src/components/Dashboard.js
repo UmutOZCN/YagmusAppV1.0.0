@@ -1,212 +1,145 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './Dashboard.css';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import "./Dashboard.css";
 
-const Dashboard = () => {
-  const [notes, setNotes] = useState([]);
-  const [streak, setStreak] = useState({ currentStreak: 0, bestStreak: 0, lastNoteDate: null });
-  const [newNote, setNewNote] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [fixing, setFixing] = useState(false);
-  const [user, setUser] = useState(null);
-  
-  useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
-    fetchNotes();
-    fetchStreak();
-    // Refresh every 30 seconds
-    const interval = setInterval(() => {
-      fetchNotes();
-      fetchStreak();
-    }, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-
-  
-
-const fetchNotes = async () => {
+const safeUser = () => {
   try {
-    const response = await axios.get('/api/notes');
-    const data = response.data;
-
-    // data.notes varsa onu, yoksa direkt data'yı al
-    const parsedNotes = Array.isArray(data?.notes) 
-      ? data.notes 
-      : (Array.isArray(data) ? data : []);
-
-    setNotes(parsedNotes);
-  } catch (err) {
-    console.error('Error fetching notes:', err);
-    setNotes([]); // hata olursa boş diziye döner
-  }
+    const raw = localStorage.getItem("user");
+    if (!raw || raw === "undefined" || raw === "null") return null;
+    return JSON.parse(raw);
+  } catch { return null; }
 };
 
-  
+const toYMD = (d) => new Date(d).toISOString().slice(0, 10);
 
-  const fetchStreak = async () => {
-    try {
-      const response = await axios.get('/api/streak');
-      setStreak(response.data);
-    } catch (err) {
-      console.error('Error fetching streak:', err);
-    }
-  };
-
-
-  const handleSubmitNote = async (e) => {
-    e.preventDefault();
-    if (!newNote.trim() || submitting) return;
-
-    setSubmitting(true);
-    try {
-      await axios.post('/api/notes', { 
-        content: newNote
-      });
-      
-      setNewNote('');
-      fetchNotes();
-      fetchStreak();
-    } catch (err) {
-      console.error('Submit error:', err);
-      const errorMessage = err.response?.data?.error || err.message || 'Not gönderilemedi';
-      alert(errorMessage);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleFixStreak = async () => {
-    if (fixing) return;
-    
-    setFixing(true);
-    try {
-      await axios.post('/api/streak/fix');
-      fetchStreak();
-      alert('Seri güncellendi!');
-    } catch (err) {
-      alert('Seri güncellenemedi: ' + (err.response?.data?.error || 'Bilinmeyen hata'));
-    } finally {
-      setFixing(false);
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = '/login';
-  };
-
-
-  const formatDateTime = (createdAt) => {
-    const date = new Date(createdAt);
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const timeStr = `${hours}:${minutes}`;
-
-    if (date.toDateString() === today.toDateString()) {
-      return `Bugün ${timeStr}`;
-    } else if (date.toDateString() === yesterday.toDateString()) {
-      return `Dün ${timeStr}`;
-    } else {
-      const dateStr = date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' });
-      return `${dateStr} ${timeStr}`;
-    }
-  };
-
-   const hasSubmittedToday = notes.some(note => {
-    const userData = localStorage.getItem('user');
-    if (!userData) return false;
-    const currentUser = JSON.parse(userData);
-    return note.userId === currentUser.id && 
-           note.date === new Date().toISOString().split('T')[0];
+export default function Dashboard() {
+  const [user] = useState(safeUser());
+  const [notes, setNotes] = useState([]);
+  const [newNote, setNewNote] = useState("");
+  const [streak, setStreak] = useState({
+    currentStreak: 0,
+    bestStreak: 0,
+    lastNoteDate: null,
   });
+  const [error, setError] = useState("");
+
+  const normalize = (data) =>
+    Array.isArray(data) ? data : Array.isArray(data?.notes) ? data.notes : [];
+
+  const recalcStreak = (list, uid) => {
+    const mine = (list || []).filter((n) => n.userId === uid);
+    const days = [...new Set(mine.map((n) => toYMD(n.createdAt)))].sort();
+    if (days.length === 0) return setStreak({ currentStreak: 0, bestStreak: 0, lastNoteDate: null });
+
+    const last = days[days.length - 1];
+    const today = toYMD(new Date());
+
+    // devam eden seri
+    let cur = 0;
+    let d = new Date(today);
+    const has = new Set(days);
+    while (has.has(toYMD(d))) {
+      cur++;
+      d.setDate(d.getDate() - 1);
+    }
+
+    // en iyi seri
+    let best = 1, run = 1;
+    for (let i = 1; i < days.length; i++) {
+      const prev = new Date(days[i - 1]);
+      prev.setDate(prev.getDate() + 1);
+      if (toYMD(prev) === days[i]) run++; else run = 1;
+      if (run > best) best = run;
+    }
+
+    setStreak({ currentStreak: cur, bestStreak: best, lastNoteDate: last });
+  };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const r = await axios.get("/api/notes");
+        const list = normalize(r.data);
+        setNotes(list);
+        if (user) recalcStreak(list, user.id);
+      } catch (e) {
+        setError(e.response?.data?.message || e.message);
+        setNotes([]);
+      }
+    })();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!user || !newNote.trim()) return;
+    try {
+      const r = await axios.post("/api/notes", {
+        userId: user.id,
+        content: newNote.trim(),
+      });
+      const created = r.data; // {id,userId,username,content,createdAt}
+      setNotes((prev) => [created, ...(prev || [])]);
+      setNewNote("");
+      recalcStreak([created, ...(notes || [])], user.id);
+    } catch (e) {
+      setError(e.response?.data?.message || e.message);
+    }
+  };
+
+  const list = Array.isArray(notes) ? notes : [];
+  const todaySent = !!list.find(
+    (n) => n.userId === user?.id && toYMD(n.createdAt) === toYMD(new Date())
+  );
 
   return (
     <div className="dashboard">
-      <header className="dashboard-header">
-        <div className="header-left">
-          <h1>Yağmuş</h1>
-          <span className="username">Merhaba, {user?.username}</span>
-        </div>
-        <button onClick={handleLogout} className="logout-button">
-          Çıkış
-        </button>
-      </header>
-
-      <div className="dashboard-content">
-        <div className="streak-card">
-          <div className="streak-number">{streak.currentStreak}</div>
-          <div className="streak-label">Gün Serisi</div>
-          {streak.bestStreak > 0 && (
-            <div className="best-streak">🏆 En iyi seri: {streak.bestStreak} gün</div>
-          )}
-          <div className="streak-subtitle">
-            {hasSubmittedToday 
-              ? '✅ Bugün notunu gönderdin!' 
-              : '📝 Seriyi devam ettirmek için bir not gönder'}
-          </div>
-          <button onClick={handleFixStreak} disabled={fixing} className="fix-streak-button">
-            {fixing ? 'Güncelleniyor...' : '🔥 Seriyi Düzelt'}
-          </button>
-        </div>
-
-        <div className="note-form-card">
-          <h2>Bir Not Bırak</h2>
-          <form onSubmit={handleSubmitNote}>
-            <textarea
-              value={newNote}
-              onChange={(e) => setNewNote(e.target.value)}
-              placeholder="Tatlı bir şeyler yaz..."
-              disabled={submitting || hasSubmittedToday}
-              rows={4}
-            />
-            {hasSubmittedToday && (
-              <div className="info-message">
-                ✅ Bugün zaten notunu gönderdin!
-              </div>
-            )}
-            <button 
-              type="submit" 
-              disabled={submitting || !newNote.trim() || hasSubmittedToday}
-              className="submit-note-button"
-            >
-              {submitting ? 'Gönderiliyor...' : 'Notu Gönder'}
+      {/* Streak kutusu */}
+      <section className="streak-card">
+        <h2>Gün Serisi</h2>
+        {todaySent ? (
+          <p>🔥 Bugün not gönderildi</p>
+        ) : (
+          <>
+            <p>📄 Seriyi devam ettirmek için bir not gönder</p>
+            <button onClick={() => setNewNote("Bugün de buradayım!")} className="fix-btn">
+              🔥 Seriyi Düzelt
             </button>
-          </form>
+          </>
+        )}
+        <div className="streak-stats">
+          <span>Mevcut: {streak.currentStreak}</span>
+          <span>En iyi: {streak.bestStreak}</span>
+          <span>Son gün: {streak.lastNoteDate || "-"}</span>
         </div>
+      </section>
 
-        <div className="notes-section">
-          <h2 className="section-title">Son Notlar</h2>
-          <div className="notes-list">
-            {notes.length === 0 ? (
-              <div className="empty-state">
-                <p>Henüz not yok. İlk sen başlat! 🔥</p>
+      {/* Not gönder */}
+      <section className="note-form">
+        <h2>Bir Not Bırak</h2>
+        <form onSubmit={handleSubmit}>
+          <textarea value={newNote} onChange={(e) => setNewNote(e.target.value)} />
+          <button type="submit">Notu Gönder</button>
+        </form>
+        {error && <div className="error">{error}</div>}
+      </section>
+
+      {/* Son notlar */}
+      <section className="notes-list">
+        <h2>Son Notlar</h2>
+        {list.length === 0 ? (
+          <p>Henüz not yok. İlk sen başlat! 🔥</p>
+        ) : (
+          list.map((note) => (
+            <div key={note.id} className="note-card">
+              <div className="note-header">
+                <span className="note-author">{note.username || "Bilinmiyor"} tarafından</span>
+                <span className="note-date">{new Date(note.createdAt).toLocaleString()}</span>
               </div>
-            ) : (
-              notes.map(note => (
-                <div key={note.id} className="note-card">
-                  <div className="note-header">
-                    <span className="note-author">{note.username} tarafından</span>
-                    <span className="note-date">{formatDateTime(note.createdAt)}</span>
-                  </div>
-                  <p className="note-content">{note.content}</p>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div>
+              <p className="note-content">{note.content}</p>
+            </div>
+          ))
+        )}
+      </section>
     </div>
   );
-};
-
-export default Dashboard;
-
+}

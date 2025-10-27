@@ -4,6 +4,10 @@ services:
     env: node
     buildCommand: cd backend && npm install
     startCommand: cd backend && node server.js
+    disk:
+      name: yagmus-db-disk
+      mountPath: /data
+      sizeGB: 1
     envVars:
       - key: JWT_SECRET
         generateValue: true
@@ -11,6 +15,8 @@ services:
         value: production
       - key: PORT
         value: 10000
+      - key: DATABASE_PATH
+        value: /data
 
   - type: web
     name: yagmus-frontend

@@ -11,7 +11,30 @@ const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
 
 // Initialize database
-const dbPath = process.env.NODE_ENV === 'production' ? '/tmp/database.db' : './database.db';
+let dbPath;
+if (process.env.NODE_ENV === 'production') {
+  const path = require('path');
+  const fs = require('fs');
+  
+  // Use persistent disk path from DATABASE_PATH env var (set in render.yaml)
+  const dataDir = process.env.DATABASE_PATH || '/data';
+  
+  // Ensure directory exists
+  try {
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+  } catch (e) {
+    console.error('Could not create data directory:', e.message);
+  }
+  
+  dbPath = path.join(dataDir, 'database.db');
+  console.log(`📦 Production database path: ${dbPath}`);
+} else {
+  dbPath = './database.db';
+  console.log(`📦 Development database path: ${dbPath}`);
+}
+
 const db = new sqlite3.Database(dbPath);
 
 // Create tables

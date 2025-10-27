@@ -2,6 +2,67 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Dashboard.css';
 
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+const safeParse = (key) => {
+  const raw = localStorage.getItem(key);
+  if (!raw || raw === "undefined" || raw === "null") return null;
+  try { return JSON.parse(raw); } catch { return null; }
+};
+
+const toYMD = (d) => {
+  if (!d) return "";
+  if (typeof d === "number") return new Date(d).toISOString().slice(0,10);
+  return String(d).slice(0,10);
+};
+
+export default function Dashboard() {
+  const [user, setUser] = useState(null);
+  const [notes, setNotes] = useState([]);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const u = safeParse("user");
+    setUser(u);
+
+    const load = async () => {
+      try {
+        // '/api/notes' mı '/notes' mu? Backend’ine göre tam yaz.
+        const r = await axios.get("/api/notes"); 
+        const data = Array.isArray(r.data) ? r.data :
+                     Array.isArray(r.data?.notes) ? r.data.notes : [];
+        setNotes(data);
+      } catch (e) {
+        setError(e.response?.data?.message || e.message);
+        setNotes([]); // .some güvenli olsun
+      }
+    };
+
+    load();
+    const id = setInterval(load, 30000);
+    return () => clearInterval(id);
+  }, []);
+
+  const today = new Date().toISOString().slice(0,10);
+  const notesArr = Array.isArray(notes) ? notes : [];
+  const hasSubmittedToday = user
+    ? notesArr.some(n => n && n.userId === user.id && toYMD(n.date) === today)
+    : false;
+
+  if (error) return <div style={{color:"#c00"}}>Hata: {error}</div>;
+
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      {hasSubmittedToday ? "Bugün kayıt var ✅" : "Bugün kayıt yok"}
+      {/* ... geri kalan içerik ... */}
+    </div>
+  );
+}
+
+
+
 const Dashboard = () => {
   const [notes, setNotes] = useState([]);
   const [streak, setStreak] = useState({ currentStreak: 0, bestStreak: 0, lastNoteDate: null });

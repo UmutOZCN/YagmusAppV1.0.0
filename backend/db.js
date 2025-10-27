@@ -54,29 +54,29 @@ class Database {
         id SERIAL PRIMARY KEY,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
-        "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `;
 
     const createNotesTable = `
       CREATE TABLE IF NOT EXISTS notes (
         id SERIAL PRIMARY KEY,
-        "userId" INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
         content TEXT NOT NULL,
-        "imageUrl" TEXT,
+        image_url TEXT,
         date TEXT NOT NULL,
-        "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY ("userId") REFERENCES users (id)
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id)
       )
     `;
 
     const createStreaksTable = `
       CREATE TABLE IF NOT EXISTS streaks (
         id SERIAL PRIMARY KEY,
-        "currentStreak" INTEGER DEFAULT 0,
-        "bestStreak" INTEGER DEFAULT 0,
-        "lastNoteDate" TEXT,
-        "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        current_streak INTEGER DEFAULT 0,
+        best_streak INTEGER DEFAULT 0,
+        last_note_date TEXT,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `;
 
@@ -84,10 +84,10 @@ class Database {
       CREATE TABLE IF NOT EXISTS streak_history (
         id SERIAL PRIMARY KEY,
         date TEXT UNIQUE NOT NULL,
-        "user1Submitted" INTEGER DEFAULT 0,
-        "user2Submitted" INTEGER DEFAULT 0,
-        "bothCompleted" INTEGER DEFAULT 0,
-        "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        user1_submitted INTEGER DEFAULT 0,
+        user2_submitted INTEGER DEFAULT 0,
+        both_completed INTEGER DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `;
 
@@ -95,8 +95,8 @@ class Database {
       CREATE TABLE IF NOT EXISTS daily_status (
         id SERIAL PRIMARY KEY,
         date TEXT UNIQUE NOT NULL,
-        "bothCompleted" INTEGER DEFAULT 0,
-        "lastCheckTime" TEXT
+        both_completed INTEGER DEFAULT 0,
+        last_check_time TEXT
       )
     `;
 
@@ -156,14 +156,12 @@ class Database {
   // Helper methods for both databases
   run(sql, params, callback) {
     if (this.isPostgreSQL) {
+      // Convert SQLite ? placeholders to PostgreSQL $1, $2, etc.
+      let query = this.convertSQL(sql);
+      
       // For PostgreSQL, we need to add RETURNING for INSERT queries
-      let query = sql;
-      if (sql.trim().toUpperCase().startsWith('INSERT') && !query.includes('RETURNING')) {
-        // Extract table name from INSERT statement
-        const tableMatch = sql.match(/INSERT INTO\s+(\w+)/i);
-        if (tableMatch) {
-          query = sql.replace(/INSERT INTO\s+(\w+)/i, `INSERT INTO $1`) + ' RETURNING id';
-        }
+      if (query.trim().toUpperCase().startsWith('INSERT') && !query.includes('RETURNING')) {
+        query += ' RETURNING id';
       }
       
       this.client.query(query, params || [], (err, result) => {
@@ -181,17 +179,14 @@ class Database {
 
   get(sql, params, callback) {
     if (this.isPostgreSQL) {
-      this.client.query(sql, params || [], (err, result) => {
+      // Convert SQLite ? placeholders to PostgreSQL $1, $2, etc.
+      const convertedSql = this.convertSQL(sql);
+      this.client.query(convertedSql, params || [], (err, result) => {
         if (err) return callback(err, null);
         const row = result.rows[0] || null;
-        // Convert PostgreSQL column names back to camelCase
         if (row) {
-          return callback(null, {
-            ...row,
-            id: row.id,
-            username: row.username,
-            createdAt: row.createdAt || row['createdAt']
-          });
+          // Convert snake_case to camelCase for JavaScript
+          return callback(null, this.mapRow(row));
         }
         callback(null, null);
       });
@@ -202,13 +197,53 @@ class Database {
 
   all(sql, params, callback) {
     if (this.isPostgreSQL) {
-      this.client.query(sql, params || [], (err, result) => {
+      // Convert SQLite ? placeholders to PostgreSQL $1, $2, etc.
+      const convertedSql = this.convertSQL(sql);
+      this.client.query(convertedSql, params || [], (err, result) => {
         if (err) return callback(err, null);
-        callback(null, result.rows || []);
+        // Convert snake_case to camelCase for all rows
+        const mappedRows = result.rows.map(row => this.mapRow(row));
+        callback(null, mappedRows);
       });
     } else {
       this.client.all(sql, params || [], callback);
     }
+  }
+
+  // Convert SQLite syntax to PostgreSQL syntax
+  convertSQL(sql) {
+    let converted = sql;
+    
+    // Replace ? placeholders with $1, $2, $3, etc.
+    let paramIndex = 1;
+    converted = converted.replace(/\?/g, () => `$${paramIndex++}`);
+    
+    // Convert column names to snake_case for PostgreSQL
+    converted = converted
+      .replace(/userId/g, 'user_id')
+      .replace(/createdAt/g, 'created_at')
+      .replace(/imageUrl/g, 'image_url')
+      .replace(/currentStreak/g, 'current_streak')
+      .replace(/bestStreak/g, 'best_streak')
+      .replace(/lastNoteDate/g, 'last_note_date')
+      .replace(/updatedAt/g, 'updated_at')
+      .replace(/user1Submitted/g, 'user1_submitted')
+      .replace(/user2Submitted/g, 'user2_submitted')
+      .replace(/bothCompleted/g, 'both_completed')
+      .replace(/lastCheckTime/g, 'last_check_time');
+    
+    return converted;
+  }
+
+  // Map PostgreSQL snake_case to JavaScript camelCase
+  mapRow(row) {
+    const mapped = {};
+    for (const key in row) {
+      // Convert snake_case to camelCase: created_at -> createdAt, user_id -> userId
+      const camelKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+      mapped[camelKey] = row[key];
+    }
+    return mapped;
   }
 
   serialize(callback) {

@@ -189,7 +189,7 @@ const recalculateStreak = (callback) => {
 
 // Check if user count is less than 2
 const getUserCount = (callback) => {
-  db.get('SELECT COUNT(*) as count FROM users', (err, row) => {
+  db.get('SELECT COUNT(*) as count FROM users', [], (err, row) => {
     if (err) return callback(err, null);
     callback(null, row.count);
   });

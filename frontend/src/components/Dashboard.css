@@ -310,3 +310,50 @@
   .compose-card { padding: 20px; }
   .notes-list { padding: 20px; max-height: 50vh; overflow-y: auto; }
 }
+
+/* === Layout spacing fixes (add at the END of Dashboard.css) === */
+
+/* sayfa yastığı biraz daha ferah olsun */
+.dashboard {
+  padding: 28px 20px 48px;
+}
+
+/* her bölüm arasında net boşluk + aynı genişlik */
+.streak-card,
+.compose-card,
+.notes-list {
+  max-width: 1200px;
+  margin: 28px auto;          /* üst-alt 28px boşluk */
+  overflow: hidden;           /* yumuşak gölgelerin taşmaması için */
+}
+
+/* başlık ile altındaki ilk öğe arasında da boşluk */
+.streak-card h2,
+.compose-card h2,
+.notes-list h2 {
+  margin-top: 6px;
+  margin-bottom: 18px;
+}
+
+/* not giriş alanı ve buton birbirine yapışmasın */
+.compose-card form {
+  display: grid;
+  gap: 14px;
+}
+
+/* bazı eski temalarda not kartının soluna süslü parantez ekleyen kural vardı;
+   görüntüdeki { ondan geliyor—kapatıyoruz */
+.notes-list .note-card::before {
+  content: none !important;
+}
+
+/* mobilde aralıkları biraz küçültelim ki ekran taşmasın */
+@media (max-width: 768px) {
+  .streak-card,
+  .compose-card,
+  .notes-list {
+    margin: 20px 12px;
+    border-radius: 12px;
+  }
+  .compose-card form { gap: 12px; }
+}

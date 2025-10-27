@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: yagmus-backend
+    env: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node server.js
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+
+  - type: web
+    name: yagmus-frontend
+    env: node
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: npx serve -s frontend/build -l 3000
+    envVars:
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: yagmus-backend
+          property: host
+

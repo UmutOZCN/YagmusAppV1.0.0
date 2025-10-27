@@ -1,4 +1,4 @@
-// backend/server.js  (CommonJS + db wrapper uyumlu)
+// backend/server.js
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
@@ -9,17 +9,41 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
-// Frontend domain(ler)ini burada tanımla
-const FRONTEND_ORIGINS = [
-  process.env.FRONTEND_URL || '',
+/* ---------- CORS AYARLARI ---------- */
+// .env veya Railway'den FRONTEND_URLS=... olarak gelebilir
+const ENV_ORIGINS = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL || '')
+  .split(',')
+  .map(s => s.trim())
+  .filter(Boolean);
+
+// izinli frontend originleri
+const FRONTEND_ORIGINS = Array.from(new Set([
+  ...ENV_ORIGINS,
+  'https://yagmusapp.up.railway.app', // aktif frontend domain
   'https://yagmusappv100-frontend-production.up.railway.app',
   'https://yagmusapp.com',
   'http://localhost:3000'
-].filter(Boolean);
+]));
 
-app.use(cors({ origin: FRONTEND_ORIGINS }));
+app.use(cors({
+  origin: (origin, cb) => {
+    // curl veya mobil için origin yoksa izin ver
+    if (!origin) return cb(null, true);
+    const allowed = FRONTEND_ORIGINS.includes(origin);
+    if (allowed) return cb(null, true);
+    console.warn('CORS blocked origin:', origin);
+    return cb(new Error('CORS not allowed for this origin'));
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 204
+}));
 
-// ---- DB yardımcı (callback -> promise) ----
+// Preflight istekleri yakala
+app.options('*', cors());
+
+/* ---------- DB Yardımcıları ---------- */
 function dbGet(sql, params = []) {
   return new Promise((resolve, reject) => {
     db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)));
@@ -36,21 +60,19 @@ function dbRun(sql, params = []) {
   });
 }
 
-// ---- Health ----
+/* ---------- HEALTH ---------- */
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
-// ---- Notes: listele ----
-// DÖNÜŞ ŞEMASI: { id, userId, username, content, createdAt, date }
+/* ---------- NOTES: LİSTELE ---------- */
 app.get('/api/notes', async (_req, res) => {
   try {
     const q = `
-      SELECT
-        n.id,
-        n.userId      AS "userId",
-        n.content,
-        n.createdAt   AS "createdAt",
-        n.date        AS "date",
-        COALESCE(u.username, '') AS username
+      SELECT n.id,
+             n.userId AS "userId",
+             n.content,
+             n.createdAt AS "createdAt",
+             n.date AS "date",
+             COALESCE(u.username, '') AS username
       FROM notes n
       LEFT JOIN users u ON u.id = n.userId
       ORDER BY n.createdAt DESC
@@ -63,25 +85,21 @@ app.get('/api/notes', async (_req, res) => {
   }
 });
 
-// ---- Notes: ekle ----
-// NOT: Şeman gereği 'date' NOT NULL (SQLite ve PostgreSQL tablolarda) — bu yüzden ekliyoruz. :contentReference[oaicite:1]{index=1}
+/* ---------- NOTES: EKLE ---------- */
 app.post('/api/notes', async (req, res) => {
   try {
     const { userId, content } = req.body;
-    if (!userId || !content) return res.status(400).json({ message: 'Missing fields' });
+    if (!userId || !content)
+      return res.status(400).json({ message: 'Missing fields' });
 
-    // YYYY-MM-DD (her iki veritabanı için güvenli)
     const ymd = new Date().toISOString().slice(0, 10);
-
-    // SQLite tarzı placeholder; db.js PG modunda otomatik $1.. dönüştürüyor
     const ins = `INSERT INTO notes (userId, content, date) VALUES (?, ?, ?)`;
     const info = await dbRun(ins, [userId, content, ymd]);
     const lastID = info?.lastID;
 
     const sel = `
-      SELECT
-        n.id, n.userId, n.content, n.createdAt, n.date,
-        COALESCE(u.username, '') AS username
+      SELECT n.id, n.userId, n.content, n.createdAt, n.date,
+             COALESCE(u.username, '') AS username
       FROM notes n
       LEFT JOIN users u ON u.id = n.userId
       WHERE n.id = ?
@@ -94,14 +112,16 @@ app.post('/api/notes', async (req, res) => {
   }
 });
 
-// ---- Auth: register (max 2 kullanıcı) ----
+/* ---------- AUTH: REGISTER ---------- */
 app.post('/api/register', async (req, res) => {
   try {
     const { username, password } = req.body;
-    if (!username || !password) return res.status(400).json({ error: 'Missing fields' });
+    if (!username || !password)
+      return res.status(400).json({ error: 'Missing fields' });
 
     const users = await dbAll(`SELECT id FROM users`);
-    if (users.length >= 2) return res.status(403).json({ error: 'User limit reached' });
+    if (users.length >= 2)
+      return res.status(403).json({ error: 'User limit reached' });
 
     const exists = await dbGet(`SELECT id FROM users WHERE username = ?`, [username]);
     if (exists) return res.status(400).json({ error: 'Username already exists' });
@@ -119,11 +139,12 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// ---- Auth: login ----
+/* ---------- AUTH: LOGIN ---------- */
 app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    if (!username || !password) return res.status(400).json({ error: 'Missing fields' });
+    if (!username || !password)
+      return res.status(400).json({ error: 'Missing fields' });
 
     const user = await dbGet(`SELECT id AS userId, username, password FROM users WHERE username = ?`, [username]);
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
@@ -140,11 +161,12 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// ---- Hata yakalayıcı ----
+/* ---------- GENEL HATA ---------- */
 app.use((err, _req, res, _next) => {
   console.error('API error:', err);
   res.status(500).json({ message: err.message || 'Server error' });
 });
 
+/* ---------- SERVER START ---------- */
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => console.log('API listening on', PORT));
+app.listen(PORT, '0.0.0.0', () => console.log('🚀 API listening on', PORT));

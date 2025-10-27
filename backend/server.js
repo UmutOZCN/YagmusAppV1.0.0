@@ -10,51 +10,6 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
 
-
-const app = express();
-
-app.use(express.json());
-
-// FRONTEND domainlerini whiteliste ekle
-app.use(cors({
-  origin: [
-    "https://yagmusappv100-frontend-production.up.railway.app",
-    // Netlify veya custom domain de kullanıyorsan burada ekle:
-    // "https://yagmusapp.com"
-  ],
-  // cookie ile auth yapıyorsan:
-  // credentials: true
-}));
-
-// Sağlık
-app.get("/api/health", (req,res)=>res.json({ ok: true }));
-
-// NOTLAR (önce basit çalışsın; DB sonra)
-app.get("/api/notes", async (req, res, next) => {
-  try {
-    // Geçici 200 testi:
-    // return res.json([]);
-
-    // Gerçek DB sorgusu:
-    const r = await pool.query(
-      "SELECT id, content, user_id as \"userId\", created_at as date FROM notes ORDER BY created_at DESC"
-    );
-    res.json(r.rows);
-  } catch (e) { next(e); }
-});
-
-// Hata yakalayıcı (logla + json döndür)
-app.use((err, req, res, next) => {
-  console.error("API error:", err);
-  res.status(500).json({ message: err.message || "Server error" });
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, "0.0.0.0", () => console.log("API on", PORT));
-
-
-
-
 app.use(express.json());
 app.get('/api/health', (req,res)=>res.json({ok:true}));
 

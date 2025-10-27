@@ -5,7 +5,7 @@ import Dashboard from './components/Dashboard';
 import axios from 'axios';
 
 // Configure axios defaults
-axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'https://yagmusapp.onrender.com';
+axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'https://yagmusappv100-backend-production.up.railway.app';
 axios.interceptors.request.use(
   config => {
     const token = localStorage.getItem('token');

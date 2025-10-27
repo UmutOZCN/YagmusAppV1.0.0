@@ -1,51 +1,52 @@
-// backend/server.js  (CommonJS sürümü — package.json'da "type":"module" eklemeye gerek yok)
+// backend/server.js  (CommonJS sürümü)
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const db = require('./db.js'); // db.js zaten module.exports = db; şeklinde export ediyor
+const db = require('./db.js');
 require('dotenv').config();
 
 const app = express();
 app.use(express.json());
 
+// --- CORS ayarları ---
 const FRONTEND_ORIGINS = [
-  "https://yagmusappv100-frontend-production.up.railway.app",
-  "https://yagmusapp.com",
-  "http://localhost:3000"
-];
+  process.env.FRONTEND_URL || '',
+  'https://yagmusapp.com',
+  'http://localhost:3000'
+].filter(Boolean);
 
-app.use(cors({
-  origin: FRONTEND_ORIGINS,
-}));
+app.use(cors({ origin: FRONTEND_ORIGINS }));
 
-// util: promisify db methods (db.get / db.all / db.run)
-function dbGet(sql, params=[]) {
+// --- DB yardımcı fonksiyonlar ---
+function dbGet(sql, params = []) {
   return new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row) => err ? reject(err) : resolve(row));
+    db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)));
   });
 }
-function dbAll(sql, params=[]) {
+function dbAll(sql, params = []) {
   return new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => err ? reject(err) : resolve(rows));
+    db.all(sql, params, (err, rows) => (err ? reject(err) : resolve(rows)));
   });
 }
-function dbRun(sql, params=[]) {
+function dbRun(sql, params = []) {
   return new Promise((resolve, reject) => {
-    db.run(sql, params, (err, info) => err ? reject(err) : resolve(info));
+    db.run(sql, params, (err, info) => (err ? reject(err) : resolve(info)));
   });
 }
 
-// Health
-app.get('/api/health', (req, res) => res.json({ ok: true }));
+// --- Healthcheck ---
+app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
-// GET notes (returns array)
-app.get('/api/notes', async (req, res) => {
+// --- Notes: listele ---
+app.get('/api/notes', async (_req, res) => {
   try {
-    // SQLite-style SQL (db wrapper convertSQL handles PG if needed)
     const q = `
-      SELECT n.id, n.userId AS "userId", n.content, n.createdAt AS "createdAt",
-             COALESCE(u.username, '') as username
+      SELECT n.id,
+             n.userId AS "userId",
+             n.content,
+             n.createdAt AS "createdAt",
+             COALESCE(u.username, '') AS username
       FROM notes n
       LEFT JOIN users u ON u.id = n.userId
       ORDER BY n.createdAt DESC
@@ -53,12 +54,12 @@ app.get('/api/notes', async (req, res) => {
     const rows = await dbAll(q);
     res.json(rows);
   } catch (e) {
-    console.error('GET /api/notes error', e);
+    console.error('GET /api/notes', e);
     res.status(500).json({ message: e.message || 'Server error' });
   }
 });
 
-// POST note
+// --- Notes: ekle ---
 app.post('/api/notes', async (req, res) => {
   try {
     const { userId, content } = req.body;
@@ -66,39 +67,39 @@ app.post('/api/notes', async (req, res) => {
 
     const ins = `INSERT INTO notes (userId, content) VALUES (?, ?)`;
     const info = await dbRun(ins, [userId, content]);
-    // info.lastID for sqlite; for PG the db.run wrapper returns lastID in object
-    const lastID = info.lastID || info.lastID === 0 ? info.lastID : null;
-    // Read back the inserted row (works for both DBs via db.get)
-    const sel = `SELECT n.id, n.userId, n.content, n.createdAt, COALESCE(u.username,'') as username FROM notes n LEFT JOIN users u ON u.id = n.userId WHERE n.id = ?`;
+    const lastID = info?.lastID;
+    const sel = `
+      SELECT n.id, n.userId, n.content, n.createdAt,
+             COALESCE(u.username, '') AS username
+      FROM notes n
+      LEFT JOIN users u ON u.id = n.userId
+      WHERE n.id = ?
+    `;
     const inserted = await dbGet(sel, [lastID]);
     res.status(201).json(inserted);
   } catch (e) {
-    console.error('POST /api/notes error', e);
+    console.error('POST /api/notes', e);
     res.status(500).json({ message: e.message || 'Server error' });
   }
 });
 
-// REGISTER (max 2 users)
+// --- Auth: kayıt (maks 2 kullanıcı) ---
 app.post('/api/register', async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) return res.status(400).json({ error: 'Missing fields' });
 
-    // check user count
-    const users = await dbAll(`SELECT * FROM users`);
+    const users = await dbAll(`SELECT id FROM users`);
     if (users.length >= 2) return res.status(403).json({ error: 'User limit reached' });
 
-    // check exists
-    const exists = await dbGet(`SELECT * FROM users WHERE username = ?`, [username]);
+    const exists = await dbGet(`SELECT id FROM users WHERE username = ?`, [username]);
     if (exists) return res.status(400).json({ error: 'Username already exists' });
 
     const hashed = await bcrypt.hash(password, 10);
-    const ins = `INSERT INTO users (username, password) VALUES (?, ?)`;
-    const info = await dbRun(ins, [username, hashed]);
-    const newId = info.lastID;
+    const info = await dbRun(`INSERT INTO users (username, password) VALUES (?, ?)`, [username, hashed]);
+    const newId = info?.lastID;
 
-    const user = await dbGet(`SELECT id as userId, username, createdAt FROM users WHERE id = ?`, [newId]);
-    // sign token (optional)
+    const user = await dbGet(`SELECT id AS userId, username, createdAt FROM users WHERE id = ?`, [newId]);
     const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET || 'devsecret', { expiresIn: '7d' });
     res.status(201).json({ token, user });
   } catch (e) {
@@ -107,20 +108,19 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// LOGIN
+// --- Auth: giriş ---
 app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) return res.status(400).json({ error: 'Missing fields' });
 
-    const user = await dbGet(`SELECT id as userId, username, password FROM users WHERE username = ?`, [username]);
-    if (!user) return res.status(401).json({ error: 'Invalid cred' });
+    const user = await dbGet(`SELECT id AS userId, username, password FROM users WHERE username = ?`, [username]);
+    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
 
     const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(401).json({ error: 'Invalid cred' });
+    if (!match) return res.status(401).json({ error: 'Invalid credentials' });
 
     const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET || 'devsecret', { expiresIn: '7d' });
-    // hide password
     delete user.password;
     res.json({ token, user });
   } catch (e) {
@@ -129,9 +129,9 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// global error fallback
-app.use((err, req, res, next) => {
-  console.error('API error middleware:', err);
+// --- Error middleware ---
+app.use((err, _req, res, _next) => {
+  console.error('API error:', err);
   res.status(500).json({ message: err.message || 'Server error' });
 });
 

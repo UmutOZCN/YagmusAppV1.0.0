@@ -4,10 +4,21 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('./db.js');
+const bodyParser = require("body-parser");
+const path = require("path");
 require('dotenv').config();
 
 const app = express();
 app.use(express.json());
+
+// Emoji ve uzun metin desteği (UTF-8 güvenliği)
+app.use(bodyParser.json({ limit: "1mb", type: "application/json" }));
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true }));
+
+// PostgreSQL veya SQLite karakter setini UTF-8'e zorla
+process.env.PGCLIENTENCODING = "UTF8";
+
 
 /* ---------- CORS AYARLARI ---------- */
 // .env veya Railway'den FRONTEND_URLS=... olarak gelebilir

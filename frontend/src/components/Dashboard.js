@@ -119,11 +119,6 @@ export default function Dashboard() {
     return { currentStreak: cur, bestStreak: best, lastDayBoth: bothDays[bothDays.length - 1] };
   }, [notes, user]);
 
-  // --- Streak seed (gerçek + 127 gösterimi) ---
-  const SEED = Number(process.env.REACT_APP_STREAK_SEED || 0);
-  const displayCurrent = currentStreak + SEED;
-  const displayBest = bestStreak + SEED;
-
   const list = Array.isArray(notes) ? notes : [];
   const iSentToday = list.some((n) => n.userId === user?.userId && toYMD(n.createdAt) === toYMD(new Date()));
   const partnerSentToday = partner
@@ -157,8 +152,8 @@ export default function Dashboard() {
           </div>
         )}
         <div className="streak-stats">
-          <span>Mevcut: <strong>{displayCurrent}</strong></span>
-          <span>En iyi: <strong>{displayBest}</strong></span>
+          <span>Mevcut: <strong>{currentStreak}</strong></span>
+          <span>En iyi: <strong>{bestStreak}</strong></span>
           <span>Son ikinizin günü: <strong>{lastDayBoth || "-"}</strong></span>
         </div>
       </section>

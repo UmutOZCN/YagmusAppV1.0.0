@@ -1,52 +1,79 @@
+/* ===== Theme Tokens ===== */
+:root {
+  --grad-1: #667eea;
+  --grad-2: #764ba2;
+  --glass-bg: rgba(255, 255, 255, 0.95);
+  --ink-900: #333;
+  --ink-700: #666;
+  --ink-500: #999;
+  --note-card-bg: #f8f9fa;
+  --primary: #667eea;
+  --danger: #f44336;
+  --danger-600: #d32f2f;
+  --accent-1: #f093fb;
+  --accent-2: #f5576c;
+  --gold-1: #fbb667;
+  --gold-2: #f7931e;
+  --shadow-1: rgba(0, 0, 0, 0.1);
+}
+
+/* ===== Page ===== */
 .dashboard {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--grad-1) 0%, var(--grad-2) 100%);
   padding: 20px;
 }
 
-.dashboard-header {
+/* Header (new) */
+.dash-header,
+.dashboard-header { /* alias: keep old class working */
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--glass-bg);
   backdrop-filter: blur(10px);
   padding: 20px 30px;
   border-radius: 15px;
   margin-bottom: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px var(--shadow-1);
 }
 
+.dash-header h1,
 .header-left h1 {
   font-size: 1.8rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--grad-1) 0%, var(--grad-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   margin-bottom: 5px;
 }
 
+.dash-header p,
 .username {
-  color: #666;
-  font-size: 0.9rem;
+  color: var(--ink-700);
+  font-size: 0.95rem;
 }
 
-.logout-button {
-  background: #f44336;
-  color: white;
+/* Logout button */
+.logout,
+.logout-button { /* alias */
+  background: var(--danger);
+  color: #fff;
   border: none;
   padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 600;
   transition: background 0.3s ease;
 }
-
+.logout:hover,
 .logout-button:hover {
-  background: #d32f2f;
+  background: var(--danger-600);
 }
 
+/* Content layout (optional grid wrapper if needed) */
 .dashboard-content {
   max-width: 1200px;
   margin: 0 auto;
@@ -55,87 +82,67 @@
   gap: 20px;
 }
 
+/* ===== Streak Card ===== */
 .streak-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--glass-bg);
   backdrop-filter: blur(10px);
   border-radius: 15px;
   padding: 40px;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px var(--shadow-1);
   animation: fadeIn 0.6s ease;
 }
 
-.streak-number {
-  font-size: 5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+.streak-ok {
+  background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  line-height: 1;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
 }
 
-.streak-label {
-  font-size: 1.5rem;
-  color: #333;
-  margin-top: 10px;
+.streak-warn {
+  color: var(--ink-900);
   font-weight: 600;
-}
-
-.best-streak {
-  background: linear-gradient(135deg, #fbb667 0%, #f7931e 100%);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin: 10px auto 0;
+  background: #fff4e5;
+  border: 1px solid #ffd7a8;
+  padding: 10px 14px;
+  border-radius: 10px;
   display: inline-block;
+  margin-bottom: 10px;
 }
 
-.streak-subtitle {
-  color: #666;
-  margin-top: 15px;
-  font-size: 0.9rem;
+.streak-stats {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  color: var(--ink-900);
+}
+.streak-stats span strong {
+  font-weight: 800;
 }
 
-.fix-streak-button {
-  margin-top: 15px;
-  padding: 10px 20px;
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
-  color: white;
-  border: none;
-  border-radius: 25px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.fix-streak-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
-}
-
-.fix-streak-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.note-form-card {
-  background: rgba(255, 255, 255, 0.95);
+/* ===== Compose (note form) ===== */
+.compose-card,
+.note-form-card { /* alias */
+  background: var(--glass-bg);
   backdrop-filter: blur(10px);
   border-radius: 15px;
   padding: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px var(--shadow-1);
   animation: fadeIn 0.6s ease;
 }
 
+.compose-card h2,
 .note-form-card h2 {
-  color: #333;
+  color: var(--ink-900);
   margin-bottom: 20px;
 }
 
+.compose-card textarea,
 .note-form-card textarea {
   width: 100%;
   padding: 15px;
@@ -147,82 +154,76 @@
   transition: all 0.3s ease;
   outline: none;
 }
-
+.compose-card textarea:focus,
 .note-form-card textarea:focus {
-  border-color: #667eea;
+  border-color: var(--grad-1);
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
-
-.note-form-card textarea:disabled {
-  background: #f5f5f5;
-  cursor: not-allowed;
-}
-
-.info-message {
-  background: #e3f2fd;
-  color: #1976d2;
-  padding: 12px;
-  border-radius: 8px;
-  margin-top: 10px;
-  font-size: 0.9rem;
-}
-
+.compose-card button[type="submit"],
 .submit-note-button {
   margin-top: 15px;
   width: 100%;
   padding: 15px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--grad-1) 0%, var(--grad-2) 100%);
   color: white;
   border: none;
   border-radius: 10px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-
+.compose-card button[type="submit"]:hover:not(:disabled),
 .submit-note-button:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
 }
-
+.compose-card button[disabled],
 .submit-note-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.notes-section {
-  grid-column: 1 / -1;
-  background: rgba(255, 255, 255, 0.95);
+.error {
+  background: #fdecea;
+  color: #b71c1c;
+  border: 1px solid #f5c6cb;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-top: 10px;
+  font-size: 0.95rem;
+}
+
+/* ===== Notes List ===== */
+.notes-list,
+.notes-section { /* alias */
+  background: var(--glass-bg);
   backdrop-filter: blur(10px);
   border-radius: 15px;
   padding: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px var(--shadow-1);
   animation: fadeIn 0.8s ease;
 }
 
+.notes-list h2,
 .section-title {
-  color: #333;
+  color: var(--ink-900);
   margin-bottom: 20px;
 }
 
-.notes-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.note-card {
-  background: #f8f9fa;
+.notes-list .note-card {
+  background: var(--note-card-bg);
   border-radius: 12px;
   padding: 20px;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid var(--primary);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-
-.note-card:hover {
+.notes-list .note-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 15px var(--shadow-1);
+}
+.notes-list .note-card.mine {
+  border-left-color: var(--gold-2);
 }
 
 .note-header {
@@ -231,360 +232,81 @@
   align-items: center;
   margin-bottom: 10px;
 }
-
 .note-author {
-  font-weight: 600;
-  color: #667eea;
+  font-weight: 700;
+  color: var(--primary);
 }
-
 .note-date {
-  color: #999;
+  color: var(--ink-500);
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
   text-align: right;
 }
-
 .note-content {
-  color: #333;
+  color: var(--ink-900);
   line-height: 1.6;
-  margin-bottom: 10px;
 }
 
-
-
+/* Empty state */
 .empty-state {
   text-align: center;
   padding: 40px;
-  color: #999;
+  color: var(--ink-500);
 }
 
+/* Animations */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Tablet - Orta boy ekranlar */
+/* ===== Responsive ===== */
 @media (max-width: 1024px) and (min-width: 769px) {
-  .dashboard {
-    padding: 15px;
-  }
-
-  .dashboard-header {
-    padding: 18px 25px;
-  }
-
-  .dashboard-content {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-
-  .streak-card {
-    padding: 35px;
-  }
-
-  .note-form-card {
-    padding: 25px;
-  }
+  .dashboard { padding: 15px; }
+  .dash-header, .dashboard-header { padding: 18px 25px; }
+  .dashboard-content { grid-template-columns: 1fr; gap: 15px; }
+  .streak-card { padding: 35px; }
+  .compose-card { padding: 25px; }
 }
 
-/* Mobil - Tablet */
 @media (max-width: 768px) {
-  .dashboard {
-    padding: 15px;
+  .dashboard { padding: 15px; }
+  .dash-header, .dashboard-header {
+    flex-direction: column; gap: 15px; text-align: center;
+    padding: 18px 20px; border-radius: 12px;
   }
-
-  .dashboard-header {
-    flex-direction: column;
-    gap: 15px;
-    text-align: center;
-    padding: 18px 20px;
-    border-radius: 12px;
+  .dash-header h1, .header-left h1 { font-size: 1.5rem; }
+  .logout, .logout-button {
+    padding: 8px 16px; font-size: 0.9rem; width: 100%; max-width: 150px;
   }
-
-  .header-left {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .header-left h1 {
-    font-size: 1.5rem;
-    margin-bottom: 5px;
-  }
-
-  .username {
-    font-size: 0.85rem;
-  }
-
-  .logout-button {
-    padding: 8px 16px;
-    font-size: 0.9rem;
-    width: 100%;
-    max-width: 150px;
-  }
-
-  .dashboard-content {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-
-  .streak-card {
-    padding: 30px 25px;
-    border-radius: 12px;
-  }
-
-  .streak-number {
-    font-size: 4rem;
-  }
-
-  .streak-label {
-    font-size: 1.3rem;
-  }
-
-  .streak-subtitle {
-    font-size: 0.85rem;
-  }
-
-  .best-streak {
-    font-size: 0.8rem;
-    padding: 6px 14px;
-  }
-
-  .fix-streak-button {
-    padding: 8px 16px;
-    font-size: 0.85rem;
-  }
-
-  .note-form-card {
-    padding: 25px;
-    border-radius: 12px;
-  }
-
-  .note-form-card h2 {
-    font-size: 1.3rem;
-  }
-
-  .notes-section {
-    padding: 25px;
-    border-radius: 12px;
-  }
-
-  .section-title {
-    font-size: 1.3rem;
-  }
+  .dashboard-content { grid-template-columns: 1fr; gap: 15px; }
+  .streak-card { padding: 30px 25px; border-radius: 12px; }
+  .compose-card { padding: 25px; border-radius: 12px; }
+  .notes-list, .notes-section { padding: 25px; border-radius: 12px; }
 }
 
-/* Küçük mobil ekranlar */
 @media (max-width: 480px) {
-  .dashboard {
-    padding: 10px;
-  }
-
-  .dashboard-header {
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 10px;
-  }
-
-  .header-left h1 {
-    font-size: 1.3rem;
-  }
-
-  .username {
-    font-size: 0.8rem;
-  }
-
-  .logout-button {
-    padding: 8px 12px;
-    font-size: 0.85rem;
-    border-radius: 6px;
-  }
-
-  .dashboard-content {
-    gap: 12px;
-  }
-
-  .streak-card {
-    padding: 25px 20px;
-  }
-
-  .streak-number {
-    font-size: 3.5rem;
-  }
-
-  .streak-label {
-    font-size: 1.1rem;
-    margin-top: 8px;
-  }
-
-  .streak-subtitle {
-    font-size: 0.8rem;
-    margin-top: 8px;
-  }
-
-  .best-streak {
-    font-size: 0.75rem;
-    padding: 5px 12px;
-  }
-
-  .fix-streak-button {
-    padding: 8px 14px;
-    font-size: 0.8rem;
-  }
-
-  .note-form-card {
-    padding: 20px;
-  }
-
-  .note-form-card h2 {
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-  }
-
-  .note-form-card textarea {
-    padding: 12px;
-    font-size: 0.9rem;
-    border-radius: 8px;
-  }
-
-  .info-message {
-    padding: 10px;
-    font-size: 0.85rem;
-    margin-top: 8px;
-  }
-
-  .submit-note-button {
-    padding: 12px;
-    font-size: 0.9rem;
-    margin-top: 12px;
-    border-radius: 8px;
-  }
-
-  .notes-section {
-    padding: 20px;
-  }
-
-  .section-title {
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-  }
-
-  .notes-list {
-    gap: 12px;
-  }
-
-  .note-card {
-    padding: 15px;
-    border-radius: 10px;
-  }
-
-  .note-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-    margin-bottom: 8px;
-  }
-
-  .note-author {
-    font-size: 0.9rem;
-  }
-
-  .note-date {
-    font-size: 0.75rem;
-  }
-
-  .note-content {
-    font-size: 0.9rem;
-    line-height: 1.5;
-  }
-
-
-
-  .empty-state {
-    padding: 30px 20px;
-    font-size: 0.9rem;
-  }
+  .dashboard { padding: 10px; }
+  .dash-header, .dashboard-header { padding: 15px; margin-bottom: 20px; border-radius: 10px; }
+  .dash-header h1, .header-left h1 { font-size: 1.3rem; }
+  .logout, .logout-button { padding: 8px 12px; font-size: 0.85rem; border-radius: 6px; }
+  .streak-card { padding: 25px 20px; }
+  .compose-card { padding: 20px; }
+  .notes-list, .notes-section { padding: 20px; }
+  .notes-list .note-card { padding: 15px; border-radius: 10px; }
+  .note-header { flex-direction: column; align-items: flex-start; gap: 5px; margin-bottom: 8px; }
+  .note-date { font-size: 0.8rem; }
 }
 
-/* Çok küçük ekranlar */
 @media (max-width: 360px) {
-  .dashboard {
-    padding: 8px;
-  }
-
-  .dashboard-header {
-    padding: 12px;
-    border-radius: 8px;
-  }
-
-  .header-left h1 {
-    font-size: 1.1rem;
-  }
-
-  .username {
-    font-size: 0.75rem;
-  }
-
-  .logout-button {
-    padding: 7px 10px;
-    font-size: 0.8rem;
-  }
-
-  .streak-card {
-    padding: 20px 15px;
-  }
-
-  .streak-number {
-    font-size: 3rem;
-  }
-
-  .streak-label {
-    font-size: 1rem;
-  }
-
-  .note-form-card,
-  .notes-section {
-    padding: 15px;
-  }
-
-  .note-card {
-    padding: 12px;
-  }
+  .dash-header, .dashboard-header { padding: 12px; border-radius: 8px; }
+  .streak-card { padding: 20px 15px; }
+  .compose-card, .notes-list { padding: 15px; }
 }
 
-/* Yatay mod (landscape) için */
 @media (max-height: 600px) and (max-width: 768px) {
-  .dashboard {
-    padding: 10px;
-  }
-
-  .dashboard-header {
-    padding: 12px 15px;
-    margin-bottom: 10px;
-  }
-
-  .streak-card {
-    padding: 20px;
-  }
-
-  .streak-number {
-    font-size: 3rem;
-  }
-
-  .note-form-card {
-    padding: 20px;
-  }
-
-  .notes-section {
-    padding: 20px;
-    max-height: 50vh;
-    overflow-y: auto;
-  }
+  .dash-header, .dashboard-header { padding: 12px 15px; margin-bottom: 10px; }
+  .streak-card { padding: 20px; }
+  .compose-card { padding: 20px; }
+  .notes-list { padding: 20px; max-height: 50vh; overflow-y: auto; }
 }
-

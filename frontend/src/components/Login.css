@@ -1,136 +1,113 @@
 :root {
   --grad-1: #667eea;
   --grad-2: #764ba2;
-  --glass-bg: rgba(255, 255, 255, 0.92);
-  --ink-900: #1f2937;
-  --ink-700: #4b5563;
-  --ink-500: #9ca3af;
-  --ring: rgba(102, 126, 234, 0.18);
-  --shadow-1: 0 12px 28px rgba(0, 0, 0, 0.12);
-  --radius: 18px;
+  --glass-bg: rgba(255, 255, 255, 0.95);
+  --ink-900: #333;
+  --ink-700: #666;
+  --ink-500: #999;
+  --shadow-1: rgba(0, 0, 0, 0.1);
 }
 
-/* Kart */
 .login-card {
-  max-width: 460px;
-  margin: clamp(48px, 10vh, 96px) auto;
+  max-width: 420px;
+  margin: 10vh auto 0;
   background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  padding: 28px 28px 22px;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-1);
+  backdrop-filter: blur(10px);
+  padding: 32px 28px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px var(--shadow-1);
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  animation: fadeIn 0.6s ease;
 }
 
-/* Başlık + alt metin */
 .login-card h1 {
-  font-size: clamp(1.75rem, 1.4rem + 1vw, 2.1rem);
-  margin: 0 0 6px;
-  line-height: 1.2;
+  font-size: 2rem;
+  margin: 0 0 6px 0;
   background: linear-gradient(135deg, var(--grad-1), var(--grad-2));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  letter-spacing: 0.2px;
-}
-.login-card p {
-  color: var(--ink-700);
-  margin: 0 0 16px;
-  font-size: 0.98rem;
 }
 
-/* Form düzeni */
+.login-card p {
+  color: var(--ink-700);
+  margin-bottom: 16px;
+}
+
 .login-card form {
   display: flex;
   flex-direction: column;
-  gap: 12px;               /* elemanların birbirine girmesini önler */
-  margin-top: 10px;
+  gap: 12px;
+  margin-top: 8px;
 }
 
-/* Inputlar */
 .login-card input {
-  width: 100%;
   padding: 12px 14px;
-  border: 1.8px solid #e5e7eb;
-  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
   font-size: 1rem;
   outline: none;
+  transition: all 0.2s ease;
   background: #fff;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
 }
 .login-card input:focus {
   border-color: var(--grad-1);
-  box-shadow: 0 0 0 6px var(--ring);
-}
-.login-card input::placeholder {
-  color: var(--ink-500);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* Buton */
 .primary {
-  margin-top: 6px;
+  margin-top: 8px;
   padding: 12px 16px;
-  border-radius: 12px;
+  border-radius: 10px;
   border: none;
   font-size: 1rem;
   font-weight: 700;
   color: #fff;
   cursor: pointer;
   background: linear-gradient(135deg, var(--grad-1), var(--grad-2));
-  box-shadow: 0 10px 22px rgba(102, 126, 234, 0.28);
-  transition: transform 0.12s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.primary:hover { transform: translateY(-1px); }
-.primary:active { transform: translateY(0); box-shadow: 0 8px 18px rgba(102,126,234,0.24); }
-.primary:disabled { opacity: 0.6; cursor: not-allowed; }
-
-/* Hata kutusu */
-.error-box {
-  background: #fdecea;
-  color: #b91c1c;
-  border: 1px solid #f5c2c7;
-  padding: 10px 12px;
-  border-radius: 12px;
-  margin-top: 4px;
-  font-size: 0.95rem;
-  text-align: left;
+.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
 }
 
-/* Toggle satırı */
 .toggle-row {
-  margin-top: 14px;
+  margin-top: 12px;
   color: var(--ink-700);
   font-size: 0.95rem;
-  display: inline-flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 4px;
 }
 .toggle-button {
+  margin-left: 6px;
   background: transparent;
   border: none;
   color: var(--grad-1);
   font-weight: 700;
   cursor: pointer;
   text-decoration: underline;
-  padding: 0;
 }
 
-/* Küçük ekranlar */
+.error-box {
+  background: #fdecea;
+  color: #b71c1c;
+  border: 1px solid #f5c6cb;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-top: 4px;
+  font-size: 0.95rem;
+}
+
+/* Small screens */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @media (max-width: 480px) {
   .login-card {
-    margin: 36px 16px;
-    padding: 22px 18px 18px;
-    border-radius: 14px;
+    margin-top: 6vh;
+    padding: 24px 20px;
+    border-radius: 12px;
   }
-  .login-card form { gap: 10px; }
-  .login-card input { border-radius: 10px; }
-  .primary { border-radius: 10px; }
-}
-
-/* Hareket hassasiyeti */
-@media (prefers-reduced-motion: reduce) {
-  .primary,
-  .login-card input { transition: none; }
+  .login-card h1 { font-size: 1.6rem; }
 }

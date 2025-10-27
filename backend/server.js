@@ -106,7 +106,7 @@ app.post('/api/notes', async (req, res) => {
     if (exists) {
       return res
         .status(409)
-        .json({ message: 'Bu kullanıcı bugün zaten bir not gönderdi.' });
+        .json({ message: 'Bugünlük bir not yeter, yarın yine beklerim 💜' });
     }
 
     // 🔹 yoksa ekle

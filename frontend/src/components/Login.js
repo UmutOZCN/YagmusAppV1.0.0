@@ -35,7 +35,7 @@ export default function Login({ setIsAuthenticated }) {
   return (
     <div className="login-card">
       <h1>Yağmuş</h1>
-      <p>Aşkımızı her gün notlarla tazelemek için yapıldı</p>
+      <p>Aşkımızı her gün notlarla tazelemek için yapıldı 🤍</p>
       <form onSubmit={handleSubmit}>
         <input
           placeholder="Kullanıcı adı"

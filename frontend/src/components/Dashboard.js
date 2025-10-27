@@ -108,14 +108,25 @@ const Dashboard = () => {
     }
   };
 
-  const hasSubmittedToday = notes.some(note => {
-    const userData = localStorage.getItem('user');
-    if (!userData) return false;
-    const currentUser = JSON.parse(userData);
-    return note.userId === currentUser.id && 
-           note.date === new Date().toISOString().split('T')[0];
-  });
 
+
+  
+ const hasSubmittedToday = Array.isArray(notes) && notes.length > 0
+  ? notes.some(note => {
+      const userData = localStorage.getItem("user");
+      if (!userData) return false;
+      const currentUser = JSON.parse(userData);
+      return (
+        note.userId === currentUser.id &&
+        note.date === new Date().toISOString().split("T")[0]
+      );
+    })
+  : false;
+
+
+
+
+  
   return (
     <div className="dashboard">
       <header className="dashboard-header">

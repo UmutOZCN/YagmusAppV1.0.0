@@ -1,90 +1,14 @@
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
+const db = require('./db');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
-
-// Initialize database
-let dbPath;
-if (process.env.NODE_ENV === 'production') {
-  const path = require('path');
-  const fs = require('fs');
-  
-  // Use persistent disk path from DATABASE_PATH env var (set in render.yaml)
-  const dataDir = process.env.DATABASE_PATH || '/data';
-  
-  // Ensure directory exists
-  try {
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir, { recursive: true });
-    }
-  } catch (e) {
-    console.error('Could not create data directory:', e.message);
-  }
-  
-  dbPath = path.join(dataDir, 'database.db');
-  console.log(`📦 Production database path: ${dbPath}`);
-} else {
-  dbPath = './database.db';
-  console.log(`📦 Development database path: ${dbPath}`);
-}
-
-const db = new sqlite3.Database(dbPath);
-
-// Create tables
-db.serialize(() => {
-  // Users table - limited to 2 users
-  db.run(`CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL,
-    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`);
-
-  // Notes table
-  db.run(`CREATE TABLE IF NOT EXISTS notes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    userId INTEGER NOT NULL,
-    content TEXT NOT NULL,
-    imageUrl TEXT,
-    date TEXT NOT NULL,
-    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (userId) REFERENCES users (id)
-  )`);
-
-  // Streaks table
-  db.run(`CREATE TABLE IF NOT EXISTS streaks (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    currentStreak INTEGER DEFAULT 0,
-    bestStreak INTEGER DEFAULT 0,
-    lastNoteDate TEXT,
-    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`);
-
-  // Daily streak tracking - tracks if both users submitted notes on each day
-  db.run(`CREATE TABLE IF NOT EXISTS streak_history (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    date TEXT UNIQUE NOT NULL,
-    user1Submitted INTEGER DEFAULT 0,
-    user2Submitted INTEGER DEFAULT 0,
-    bothCompleted INTEGER DEFAULT 0,
-    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`);
-
-  // Track if today is completed (both users submitted)
-  db.run(`CREATE TABLE IF NOT EXISTS daily_status (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    date TEXT UNIQUE NOT NULL,
-    bothCompleted INTEGER DEFAULT 0,
-    lastCheckTime TEXT
-  )`);
-});
 
 // Middleware
 app.use(cors());
@@ -300,16 +224,17 @@ app.post('/api/register', async (req, res) => {
           return res.status(500).json({ error: 'Şifre hashleme hatası' });
         }
 
-        db.run('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword], function(err) {
+        db.run('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword], (err, result) => {
           if (err) {
-            if (err.message.includes('UNIQUE constraint')) {
+            if (err.message.includes('UNIQUE constraint') || err.message.includes('duplicate key')) {
               return res.status(409).json({ error: 'Kullanıcı adı zaten kullanılıyor' });
             }
             return res.status(500).json({ error: 'Kayıt başarısız' });
           }
 
-          const token = jwt.sign({ id: this.lastID, username }, JWT_SECRET);
-          res.status(201).json({ token, user: { id: this.lastID, username } });
+          const lastID = result ? result.lastID : null;
+          const token = jwt.sign({ id: lastID, username }, JWT_SECRET);
+          res.status(201).json({ token, user: { id: lastID, username } });
         });
       });
     });
@@ -466,7 +391,7 @@ app.post('/api/notes', authenticateToken, (req, res) => {
 
       // Insert note
       db.run('INSERT INTO notes (userId, content, imageUrl, date) VALUES (?, ?, ?, ?)', 
-        [req.user.id, content.trim(), null, today], function(err) {
+        [req.user.id, content.trim(), null, today], (err, result) => {
         if (err) {
           console.error('Database error:', err);
           return res.status(500).json({ error: 'Not kaydedilemedi: ' + err.message });
@@ -479,9 +404,10 @@ app.post('/api/notes', authenticateToken, (req, res) => {
           }
         });
 
+        const lastID = result ? result.lastID : null;
         res.status(201).json({
           note: {
-            id: this.lastID,
+            id: lastID,
             userId: req.user.id,
             content: content.trim(),
             date: today

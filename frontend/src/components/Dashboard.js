@@ -18,12 +18,12 @@ function safeUser() {
   }
 }
 
-/** Tarihi YYYY-MM-DD’e indirger */
+/** Tarihi YYYY-MM-DD formatına çevir */
 const toYMD = (d) => new Date(d).toISOString().slice(0, 10);
 
 export default function Dashboard() {
-  const [user] = useState(safeUser()); // { userId, username, createdAt }
-  const [notes, setNotes] = useState([]); // {id,userId,username,content,createdAt}[]
+  const [user] = useState(safeUser());
+  const [notes, setNotes] = useState([]);
   const [newNote, setNewNote] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -33,7 +33,11 @@ export default function Dashboard() {
     try {
       setLoading(true);
       const r = await api.get("/api/notes");
-      const list = Array.isArray(r.data) ? r.data : Array.isArray(r.data?.notes) ? r.data.notes : [];
+      const list = Array.isArray(r.data)
+        ? r.data
+        : Array.isArray(r.data?.notes)
+        ? r.data.notes
+        : [];
       setNotes(list);
     } catch (e) {
       setError(e.response?.data?.message || e.message || "Beklenmeyen hata");
@@ -47,7 +51,7 @@ export default function Dashboard() {
     fetchNotes();
   }, []);
 
-  /** Bugünkü notu göndermek */
+  /** Not gönderme */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) return setError("Önce giriş yapmalısın.");
@@ -69,11 +73,13 @@ export default function Dashboard() {
     }
   };
 
-  /** Partner kim? (toplam iki kullanıcı) */
+  /** Partner kim? */
   const partner = useMemo(() => {
     if (!user) return null;
     const other = (notes || []).find((n) => n.userId !== user.userId);
-    return other ? { userId: other.userId, username: other.username || "Partner" } : null;
+    return other
+      ? { userId: other.userId, username: other.username || "Partner" }
+      : null;
   }, [notes, user]);
 
   /** Streak hesaplama */
@@ -97,10 +103,12 @@ export default function Dashboard() {
       const set = byDay.get(d);
       return set.has(user.userId) && set.has(secondId);
     });
-    if (bothDays.length === 0) return { currentStreak: 0, bestStreak: 0, lastDayBoth: null };
+    if (bothDays.length === 0)
+      return { currentStreak: 0, bestStreak: 0, lastDayBoth: null };
 
     // bestStreak
-    let best = 1, run = 1;
+    let best = 1,
+      run = 1;
     for (let i = 1; i < bothDays.length; i++) {
       const prev = new Date(bothDays[i - 1]);
       prev.setDate(prev.getDate() + 1);
@@ -109,25 +117,37 @@ export default function Dashboard() {
       if (run > best) best = run;
     }
 
-    // currentStreak: bugünden geriye
+    // currentStreak: bugünden geriye doğru
     let cur = 0;
     let d = new Date();
     while (bothDays.includes(toYMD(d))) {
       cur++;
       d.setDate(d.getDate() - 1);
     }
-    return { currentStreak: cur, bestStreak: best, lastDayBoth: bothDays[bothDays.length - 1] };
+    return {
+      currentStreak: cur,
+      bestStreak: best,
+      lastDayBoth: bothDays[bothDays.length - 1],
+    };
   }, [notes, user]);
 
-  // --- Streak seed (sadece görüntü için) ---
-  const SEED = Number(process.env.REACT_APP_STREAK_SEED || 0);
-  const displayCurrent = Math.max(currentStreak, SEED);
-  const displayBest = Math.max(bestStreak, SEED);
+  /**
+   * --- 127 GÜNDEN BAŞLAYAN STREAK ---
+   * OFFSET = 126, çünkü ilk gün +1 = 127 başlasın
+   * Her yeni gün doğal şekilde 128, 129... artar.
+   */
+  const OFFSET = 126;
+  const displayCurrent = currentStreak + OFFSET + (currentStreak > 0 ? 1 : 0);
+  const displayBest = bestStreak + OFFSET + (bestStreak > 0 ? 1 : 0);
 
   const list = Array.isArray(notes) ? notes : [];
-  const iSentToday = list.some((n) => n.userId === user?.userId && toYMD(n.createdAt) === toYMD(new Date()));
+  const iSentToday = list.some(
+    (n) => n.userId === user?.userId && toYMD(n.createdAt) === toYMD(new Date())
+  );
   const partnerSentToday = partner
-    ? list.some((n) => n.userId === partner.userId && toYMD(n.createdAt) === toYMD(new Date()))
+    ? list.some(
+        (n) => n.userId === partner.userId && toYMD(n.createdAt) === toYMD(new Date())
+      )
     : false;
 
   const handleLogout = () => {
@@ -141,25 +161,43 @@ export default function Dashboard() {
       <header className="dash-header">
         <div>
           <h1>Yağmuş</h1>
-          <p>Hoş geldin, <strong>{user?.username}</strong> 💜</p>
-          {partner && <p>Partner: <strong>{partner.username}</strong></p>}
+          <p>
+            Hoş geldin, <strong>{user?.username}</strong> 💜
+          </p>
+          {partner && (
+            <p>
+              Partner: <strong>{partner.username}</strong>
+            </p>
+          )}
         </div>
-        <button className="logout" onClick={handleLogout}>Çıkış Yap</button>
+        <button className="logout" onClick={handleLogout}>
+          Çıkış Yap
+        </button>
       </header>
 
       <section className="streak-card">
         <h2>Gün Serisi</h2>
         {iSentToday && partnerSentToday ? (
-          <div className="streak-ok">Bugün ikiniz de not gönderdiniz. Seri devam ediyor! 🔥</div>
+          <div className="streak-ok">
+            Bugün ikiniz de not gönderdiniz. Seri devam ediyor! 🔥
+          </div>
         ) : (
           <div className="streak-warn">
-            {iSentToday ? "Partnerin henüz not göndermedi." : "Bugün sen henüz not göndermedin."}
+            {iSentToday
+              ? "Partnerin henüz not göndermedi."
+              : "Bugün sen henüz not göndermedin."}
           </div>
         )}
         <div className="streak-stats">
-          <span>Mevcut: <strong>{displayCurrent}</strong></span>
-          <span>En iyi: <strong>{displayBest}</strong></span>
-          <span>Son ikinizin günü: <strong>{lastDayBoth || "-"}</strong></span>
+          <span>
+            Mevcut: <strong>{displayCurrent}</strong>
+          </span>
+          <span>
+            En iyi: <strong>{displayBest}</strong>
+          </span>
+          <span>
+            Son ikinizin günü: <strong>{lastDayBoth || "-"}</strong>
+          </span>
         </div>
       </section>
 
@@ -186,10 +224,15 @@ export default function Dashboard() {
           <p>Henüz not yok. İlk sen başlat! ✨</p>
         ) : (
           list.map((note) => (
-            <div key={note.id} className={"note-card" + (note.userId === user?.userId ? " mine" : "")}>
+            <div
+              key={note.id}
+              className={"note-card" + (note.userId === user?.userId ? " mine" : "")}
+            >
               <div className="note-header">
                 <span className="note-author">{note.username || "Bilinmiyor"}</span>
-                <span className="note-date">{new Date(note.createdAt).toLocaleString()}</span>
+                <span className="note-date">
+                  {new Date(note.createdAt).toLocaleString()}
+                </span>
               </div>
               <p className="note-content">{note.content}</p>
             </div>

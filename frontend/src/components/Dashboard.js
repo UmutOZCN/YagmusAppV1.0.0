@@ -2,7 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import "./Dashboard.css";
 
-/** Güvenli user okuma (login/register sonrası localStorage'a yazıyoruz) */
+// Backend URL'ini .env'den al (Login.js ile aynı yaklaşım)
+const api = axios.create({
+  baseURL: process.env.REACT_APP_API_URL || ""
+});
+
+/** Güvenli user okuma */
 function safeUser() {
   try {
     const raw = localStorage.getItem("user");
@@ -17,7 +22,7 @@ function safeUser() {
 const toYMD = (d) => new Date(d).toISOString().slice(0, 10);
 
 export default function Dashboard() {
-  const [user] = useState(safeUser()); // user: { userId, username, createdAt }
+  const [user] = useState(safeUser()); // { userId, username, createdAt }
   const [notes, setNotes] = useState([]); // {id,userId,username,content,createdAt}[]
   const [newNote, setNewNote] = useState("");
   const [error, setError] = useState("");
@@ -27,7 +32,7 @@ export default function Dashboard() {
   const fetchNotes = async () => {
     try {
       setLoading(true);
-      const r = await axios.get("/api/notes");
+      const r = await api.get("/api/notes");
       const list = Array.isArray(r.data) ? r.data : Array.isArray(r.data?.notes) ? r.data.notes : [];
       setNotes(list);
     } catch (e) {
@@ -50,9 +55,8 @@ export default function Dashboard() {
 
     try {
       setLoading(true);
-      // DİKKAT: backend şu anda body'de userId bekliyor.
-      const { data: created } = await axios.post("/api/notes", {
-        userId: user.userId, // <- server.js 'userId' alanıyla uyumlu (repoda 'id' değil) 
+      const { data: created } = await api.post("/api/notes", {
+        userId: user.userId,
         content: newNote.trim(),
       });
       setNotes((prev) => [created, ...(prev || [])]);
@@ -65,19 +69,14 @@ export default function Dashboard() {
     }
   };
 
-  /** Partner kim? (toplam iki kullanıcı olduğunu biliyoruz) */
+  /** Partner kim? (toplam iki kullanıcı) */
   const partner = useMemo(() => {
     if (!user) return null;
-    // notlar üzerinden farklı userId'yi bul
     const other = (notes || []).find((n) => n.userId !== user.userId);
     return other ? { userId: other.userId, username: other.username || "Partner" } : null;
   }, [notes, user]);
 
-  /** “Streak” mantığı:
-   *  Bir gün “sayılır” olması için O GÜN en az 1 not SEN + 1 not PARTNER olmalı.
-   *  currentStreak: bugünden geriye doğru kesintisiz gün sayısı
-   *  bestStreak: geçmişteki en uzun seri
-   */
+  /** Streak hesaplama */
   const { currentStreak, bestStreak, lastDayBoth } = useMemo(() => {
     if (!user) return { currentStreak: 0, bestStreak: 0, lastDayBoth: null };
     const byDay = new Map(); // "YYYY-MM-DD" -> Set<userId>
@@ -86,25 +85,21 @@ export default function Dashboard() {
       if (!byDay.has(d)) byDay.set(d, new Set());
       byDay.get(d).add(n.userId);
     }
-    // İki kullanıcıyı gün bazında bulmak için kimler var bak
     const allUserIds = new Set((notes || []).map((n) => n.userId));
     if (!allUserIds.has(user.userId) || allUserIds.size < 2) {
-      // Partner henüz hiç not atmamışsa seri oluşmaz
       return { currentStreak: 0, bestStreak: 0, lastDayBoth: null };
     }
-    const ids = [...allUserIds];
-    const secondId = ids.find((id) => id !== user.userId);
+    const secondId = [...allUserIds].find((id) => id !== user.userId);
     if (!secondId) return { currentStreak: 0, bestStreak: 0, lastDayBoth: null };
 
-    const days = [...byDay.keys()].sort(); // artan
+    const days = [...byDay.keys()].sort();
     const bothDays = days.filter((d) => {
       const set = byDay.get(d);
       return set.has(user.userId) && set.has(secondId);
     });
-
     if (bothDays.length === 0) return { currentStreak: 0, bestStreak: 0, lastDayBoth: null };
 
-    // bestStreak hesapla
+    // bestStreak
     let best = 1, run = 1;
     for (let i = 1; i < bothDays.length; i++) {
       const prev = new Date(bothDays[i - 1]);
@@ -114,14 +109,13 @@ export default function Dashboard() {
       if (run > best) best = run;
     }
 
-    // currentStreak (bugünden geriye)
+    // currentStreak: bugünden geriye
     let cur = 0;
-    let d = new Date(); // bugün
+    let d = new Date();
     while (bothDays.includes(toYMD(d))) {
       cur++;
       d.setDate(d.getDate() - 1);
     }
-
     return { currentStreak: cur, bestStreak: best, lastDayBoth: bothDays[bothDays.length - 1] };
   }, [notes, user]);
 
@@ -134,12 +128,11 @@ export default function Dashboard() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    window.location.href = "/"; // App.js guard'ı login'e düşürecek
+    window.location.href = "/";
   };
 
   return (
     <div className="dashboard">
-      {/* Üst bilgi */}
       <header className="dash-header">
         <div>
           <h1>Yağmuş</h1>
@@ -149,10 +142,8 @@ export default function Dashboard() {
         <button className="logout" onClick={handleLogout}>Çıkış Yap</button>
       </header>
 
-      {/* Streak kutusu */}
       <section className="streak-card">
         <h2>Gün Serisi</h2>
-
         {iSentToday && partnerSentToday ? (
           <div className="streak-ok">Bugün ikiniz de not gönderdiniz. Seri devam ediyor! 🔥</div>
         ) : (
@@ -160,7 +151,6 @@ export default function Dashboard() {
             {iSentToday ? "Partnerin henüz not göndermedi." : "Bugün sen henüz not göndermedin."}
           </div>
         )}
-
         <div className="streak-stats">
           <span>Mevcut: <strong>{currentStreak}</strong></span>
           <span>En iyi: <strong>{bestStreak}</strong></span>
@@ -168,7 +158,6 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* Not gönderme */}
       <section className="compose-card">
         <h2>Bir Not Bırak</h2>
         <form onSubmit={handleSubmit}>
@@ -186,7 +175,6 @@ export default function Dashboard() {
         {error && <div className="error">{error}</div>}
       </section>
 
-      {/* Not listesi */}
       <section className="notes-list">
         <h2>Son Notlar</h2>
         {list.length === 0 ? (

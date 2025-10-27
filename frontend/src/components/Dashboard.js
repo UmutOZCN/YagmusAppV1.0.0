@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Dashboard.css';
 
-import { useEffect, useState } from "react";
-import axios from "axios";
+
 
 const safeParse = (key) => {
   const raw = localStorage.getItem(key);

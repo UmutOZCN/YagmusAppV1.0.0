@@ -2,39 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './Login.css';
 
-import { useNavigate } from "react-router-dom";
-
-export default function Login() {
-  const nav = useNavigate();
-  const [username, setU] = useState("");
-  const [password, setP] = useState("");
-  const [error, setError] = useState("");
-
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    try {
-      const r = await axios.post("/auth/login", { username, password }); // veya '/api/auth/login' senin backend yoluna göre
-      // BEARER token döndürüyorsan:
-      if (r.data?.token) localStorage.setItem("token", r.data.token);
-      if (r.data?.user)  localStorage.setItem("user", JSON.stringify(r.data.user));
-      nav("/dashboard");
-    } catch (err) {
-      const msg = err.response?.data?.message || err.message || "Login failed";
-      setError(msg);
-    }
-  };
-
-  return (
-    <form onSubmit={onSubmit}>
-      {/* ... inputlar ... */}
-      {error && <div style={{color:"#c00"}}>{error}</div>}
-      <button type="submit">Login</button>
-    </form>
-  );
-}
-
-
 const Login = ({ setIsAuthenticated }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState('');

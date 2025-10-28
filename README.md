@@ -145,13 +145,13 @@ Partner: “I thought the same ☀️”
 ### 📱 Mobile View
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/Screenshots/AppLogin.jpg" 
+  <img src="[https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/Screenshots/AppLogin.jpg](https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/Screenshots/AppLogin.jpg)" 
        alt="App Login" width="30%" style="border-radius:12px; margin:6px;"/>
-  <img src="Screenshots/AppDashboard.jpg" 
+  <img src="[https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/Screenshots/AppDashboard.jpg](https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/Screenshots/AppDashboard.jpg)" 
        alt="App Dashboard" width="30%" style="border-radius:12px; margin:6px;"/>
   <img src="[https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/AppAlert.jpg](https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/AppAlert.jpg)" 
        alt="App Alert" width="30%" style="border-radius:12px; margin:6px;"/>
-  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/AppLogo.jpg" 
+  <img src="[https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/Screenshots/AppLogo.jpg](https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/Screenshots/AppLogo.jpg" 
        alt="App Logo" width="30%" style="border-radius:12px; margin:6px;"/>
 </p>
 

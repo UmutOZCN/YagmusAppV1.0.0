@@ -172,15 +172,14 @@ Partner: “I thought the same ☀️”
 ### 🖥️ Desktop View
 
 <p align="center">
-  <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/WebDashboard.png" width="60%" alt="WebDashboard"/><br/>
-  <sub><b>Dashboard</b></sub>
-</p>
-
-<p align="center">
   <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/WebLogin.png" width="60%" alt="WebLogin"/><br/>
   <sub><b>Login</b></sub>
 </p>
 
+<p align="center">
+  <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/WebDashboard.png" width="60%" alt="WebDashboard"/><br/>
+  <sub><b>Dashboard</b></sub>
+</p>
 
 ---
 

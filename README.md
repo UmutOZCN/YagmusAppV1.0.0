@@ -102,23 +102,23 @@ Start Command: npx serve -s build -l $PORT
 
 ---
 
-##💻 Local Setup
+## 💻 Local Setup
 
-**1. Clone
+**1. Clone**
 git clone https://github.com/UmutOZCN/YagmusAppV1.0.0.git
 
-**2. Install backend dependencies
+**2. Install backend dependencies**
 cd backend
 npm install
 
-**3. Install frontend dependencies
+**3. Install frontend dependencies**
 cd ../frontend
 npm install
 
-**4. Run backend
+**4. Run backend**
 npm start
 
-**5. Run frontend
+**5. Run frontend**
 cd ../frontend
 npm start
 

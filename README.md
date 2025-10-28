@@ -127,34 +127,68 @@ npm start
 
 ---
 
-💜 Example Dashboard
+## 💜 Example Dashboard
+
+```text
 [Daily Streak: 127 🔥]
 
 Both of you shared your notes today — the streak continues 💌
-
 --------------------------------------------------------------
-
 You: “The weather was perfect today 💜”
-
 Partner: “I thought the same ☀️”
+```
 
 ---
 
-👤 Developer
+## 🖼️ Screenshots
 
-Name: Umut Özcan
+### 📱 Mobile View
 
-Version: 1.0.0
+<p align="center">
+  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/mobile-login.png" 
+       alt="Mobile Login" width="30%" style="border-radius:12px; margin:6px;"/>
+  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/mobile-dashboard.png" 
+       alt="Mobile Dashboard" width="30%" style="border-radius:12px; margin:6px;"/>
+  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/mobile-streak.png" 
+       alt="Mobile Streak" width="30%" style="border-radius:12px; margin:6px;"/>
+</p>
 
-Description:
-A minimalist web application designed to connect two people through daily notes.
+---
+
+### 💻 Desktop View
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/desktop-login.png" 
+       alt="Desktop Login" width="45%" style="border-radius:12px; margin:8px;"/>
+  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/desktop-dashboard.png" 
+       alt="Desktop Dashboard" width="45%" style="border-radius:12px; margin:8px;"/>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/desktop-streak.png" 
+       alt="Desktop Streak" width="90%" style="border-radius:12px; margin:8px;"/>
+</p>
+
+---
+
+## 👤 Developer
+
+**Name:** Umut Özcan  
+**Version:** 1.0.0  
+**Description:**  
+A minimalist web application designed to connect two people through daily notes.  
 Technically solid — emotionally genuine 💜
 
 ---
 
-License
+## 📜 License
 
-This project was created for personal use only.
-Redistribution or commercial use is not permitted without permission.
+This project was created for **personal use only.**  
+Redistribution or commercial use is **not permitted** without permission.  
 
-<p align="center"> Made with 💜 by <strong>Umut Özcan</strong><br/> <em>“One note a day keeps the distance away.”</em> </p> ```
+---
+
+<p align="center">
+  Made with 💜 by <strong>Umut Özcan</strong><br/>
+  <em>“One note a day keeps the distance away.”</em>
+</p>

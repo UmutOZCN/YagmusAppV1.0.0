@@ -129,9 +129,13 @@ npm start
 
 💜 Example Dashboard
 [Daily Streak: 127 🔥]
+
 Both of you shared your notes today — the streak continues 💌
+
 --------------------------------------------------------------
+
 You: “The weather was perfect today 💜”
+
 Partner: “I thought the same ☀️”
 
 ---
@@ -139,7 +143,9 @@ Partner: “I thought the same ☀️”
 👤 Developer
 
 Name: Umut Özcan
+
 Version: 1.0.0
+
 Description:
 A minimalist web application designed to connect two people through daily notes.
 Technically solid — emotionally genuine 💜

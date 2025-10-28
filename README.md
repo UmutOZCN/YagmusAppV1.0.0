@@ -142,23 +142,34 @@ Partner: “I thought the same ☀️”
 
 ## 📸 Screenshots
 
-### 🟣 Mobile Wiev
+### 🟣 Mobile View
 
 <p align="center">
-  <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/AppDashboard.jpg" width="22%" alt="AppDashboard"/>
-  <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/AppLogin.jpg" width="22%" alt="AppLogin"/>
-  <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/AppLogo.jpg" width="22%" alt="AppLogo"/>
-  <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/AppAlert.jpg" width="22%" alt="AppAlert"/>
-  <br/>
-  <sub><b>Dashboard</b></sub> &nbsp;&nbsp;&nbsp;&nbsp;
-  <sub><b>Login</b></sub> &nbsp;&nbsp;&nbsp;&nbsp;
-  <sub><b>Logo</b></sub> &nbsp;&nbsp;&nbsp;&nbsp;
-  <sub><b>Alert</b></sub>
+  <table>
+    <tr>
+      <td align="center" width="25%">
+        <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/AppDashboard.jpg" width="90%" alt="AppDashboard"/><br/>
+        <sub><b>Dashboard</b></sub>
+      </td>
+      <td align="center" width="25%">
+        <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/AppLogin.jpg" width="90%" alt="AppLogin"/><br/>
+        <sub><b>Login</b></sub>
+      </td>
+      <td align="center" width="25%">
+        <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/AppLogo.jpg" width="90%" alt="AppLogo"/><br/>
+        <sub><b>Logo</b></sub>
+      </td>
+      <td align="center" width="25%">
+        <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/AppAlert.jpg" width="90%" alt="AppAlert"/><br/>
+        <sub><b>Alert</b></sub>
+      </td>
+    </tr>
+  </table>
 </p>
 
 ---
 
-### 🖥️ Dekstop Wiev
+### 🖥️ Desktop View
 
 <p align="center">
   <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/WebDashboard.png" width="60%" alt="WebDashboard"/><br/>
@@ -169,6 +180,7 @@ Partner: “I thought the same ☀️”
   <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/WebLogin.png" width="60%" alt="WebLogin"/><br/>
   <sub><b>Login</b></sub>
 </p>
+
 
 ---
 

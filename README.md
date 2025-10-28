@@ -146,13 +146,13 @@ Partner: “I thought the same ☀️”
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/Screenshots/AppLogin.jpg" 
-       alt="Mobile Login" width="30%" style="border-radius:12px; margin:6px;"/>
+       alt="App Login" width="30%" style="border-radius:12px; margin:6px;"/>
   <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/AppDashboard.jpg" 
-       alt="Mobile Dashboard" width="30%" style="border-radius:12px; margin:6px;"/>
+       alt="App Dashboard" width="30%" style="border-radius:12px; margin:6px;"/>
   <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/AppAlert.jpg" 
-       alt="Mobile Streak" width="30%" style="border-radius:12px; margin:6px;"/>
+       alt="App Alert" width="30%" style="border-radius:12px; margin:6px;"/>
   <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/AppLogo.jpg" 
-       alt="Mobile Streak" width="30%" style="border-radius:12px; margin:6px;"/>
+       alt="App Logo" width="30%" style="border-radius:12px; margin:6px;"/>
 </p>
 
 ---
@@ -161,9 +161,9 @@ Partner: “I thought the same ☀️”
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/WebLogin.jpg" 
-       alt="Desktop Login" width="45%" style="border-radius:12px; margin:8px;"/>
+       alt="Web Login" width="45%" style="border-radius:12px; margin:8px;"/>
   <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/WebDashboard.jpg" 
-       alt="Desktop Dashboard" width="45%" style="border-radius:12px; margin:8px;"/>
+       alt="Web Dashboard" width="45%" style="border-radius:12px; margin:8px;"/>
 </p>
 
 ---

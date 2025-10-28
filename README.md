@@ -145,13 +145,13 @@ Partner: “I thought the same ☀️”
 ### 📱 Mobile View
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/Screenshots/AppLogin.png" 
+  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/Screenshots/AppLogin.jpg" 
        alt="Mobile Login" width="30%" style="border-radius:12px; margin:6px;"/>
-  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/AppDashboard.png" 
+  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/AppDashboard.jpg" 
        alt="Mobile Dashboard" width="30%" style="border-radius:12px; margin:6px;"/>
-  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/AppAlert.png" 
+  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/AppAlert.jpg" 
        alt="Mobile Streak" width="30%" style="border-radius:12px; margin:6px;"/>
-  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/AppLogo.png" 
+  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/AppLogo.jpg" 
        alt="Mobile Streak" width="30%" style="border-radius:12px; margin:6px;"/>
 </p>
 
@@ -160,9 +160,9 @@ Partner: “I thought the same ☀️”
 ### 💻 Desktop View
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/WebLogin.png" 
+  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/WebLogin.jpg" 
        alt="Desktop Login" width="45%" style="border-radius:12px; margin:8px;"/>
-  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/WebDashboard.png" 
+  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/WebDashboard.jpg" 
        alt="Desktop Dashboard" width="45%" style="border-radius:12px; margin:8px;"/>
 </p>
 

@@ -98,6 +98,9 @@ If both users share a note on the same day, the **daily streak** continues — s
 Root Directory: /frontend
 Publish Directory: build
 Start Command: npx serve -s build -l $PORT
+```
+
+---
 
 💻 Local Setup
 
@@ -122,3 +125,30 @@ npm start
 🟢 Backend → http://localhost:3001
 🟣 Frontend → http://localhost:3000
 
+---
+
+💜 Example Dashboard
+[Daily Streak: 127 🔥]
+Both of you shared your notes today — the streak continues 💌
+--------------------------------------------------------------
+You: “The weather was perfect today 💜”
+Partner: “I thought the same ☀️”
+
+---
+
+👤 Developer
+
+Name: Umut Özcan
+Version: 1.0.0
+Description:
+A minimalist web application designed to connect two people through daily notes.
+Technically solid — emotionally genuine 💜
+
+---
+
+License
+
+This project was created for personal use only.
+Redistribution or commercial use is not permitted without permission.
+
+<p align="center"> Made with 💜 by <strong>Umut Özcan</strong><br/> <em>“One note a day keeps the distance away.”</em> </p> ```

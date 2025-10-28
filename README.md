@@ -144,22 +144,31 @@ Partner: “I thought the same ☀️”
 
 ### 🟣 Mobile Wiev
 
-| Screen | Preview |
-|--------|----------|
-| **App Alert** | ![AppAlert](https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/AppAlert.jpg) |
-| **App Dashboard** | ![AppDashboard](https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/AppDashboard.jpg) |
-| **App Login** | ![AppLogin](https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/AppLogin.jpg) |
-| **App Logo** | ![AppLogo](https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/AppLogo.jpg) |
+<p align="center">
+  <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/AppDashboard.jpg" width="22%" alt="AppDashboard"/>
+  <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/AppLogin.jpg" width="22%" alt="AppLogin"/>
+  <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/AppLogo.jpg" width="22%" alt="AppLogo"/>
+  <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/AppAlert.jpg" width="22%" alt="AppAlert"/>
+  <br/>
+  <sub><b>Dashboard</b></sub> &nbsp;&nbsp;&nbsp;&nbsp;
+  <sub><b>Login</b></sub> &nbsp;&nbsp;&nbsp;&nbsp;
+  <sub><b>Logo</b></sub> &nbsp;&nbsp;&nbsp;&nbsp;
+  <sub><b>Alert</b></sub>
+</p>
 
 ---
 
-### 🖥️ Desktop Wiev
+### 🖥️ Dekstop Wiev
 
-| Screen | Preview |
-|--------|----------|
-| **Web Dashboard** | ![WebDashboard](https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/WebDashboard.png) |
-| **Web Login** | ![WebLogin](https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/WebLogin.png) |
+<p align="center">
+  <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/WebDashboard.png" width="60%" alt="WebDashboard"/><br/>
+  <sub><b>Dashboard</b></sub>
+</p>
 
+<p align="center">
+  <img src="https://github.com/UmutOZCN/YagmusAppV1.0.0/blob/main/Screenshots/WebLogin.png" width="60%" alt="WebLogin"/><br/>
+  <sub><b>Login</b></sub>
+</p>
 
 ---
 

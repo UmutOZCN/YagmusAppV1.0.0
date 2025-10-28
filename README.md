@@ -145,11 +145,13 @@ Partner: “I thought the same ☀️”
 ### 📱 Mobile View
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/mobile-login.png" 
+  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/Screenshots/AppLogin.png" 
        alt="Mobile Login" width="30%" style="border-radius:12px; margin:6px;"/>
-  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/mobile-dashboard.png" 
+  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/AppDashboard.png" 
        alt="Mobile Dashboard" width="30%" style="border-radius:12px; margin:6px;"/>
-  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/mobile-streak.png" 
+  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/AppAlert.png" 
+       alt="Mobile Streak" width="30%" style="border-radius:12px; margin:6px;"/>
+  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/AppLogo.png" 
        alt="Mobile Streak" width="30%" style="border-radius:12px; margin:6px;"/>
 </p>
 
@@ -158,15 +160,10 @@ Partner: “I thought the same ☀️”
 ### 💻 Desktop View
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/desktop-login.png" 
+  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/WebLogin.png" 
        alt="Desktop Login" width="45%" style="border-radius:12px; margin:8px;"/>
-  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/desktop-dashboard.png" 
+  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/WebDashboard.png" 
        alt="Desktop Dashboard" width="45%" style="border-radius:12px; margin:8px;"/>
-</p>
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/UmutOZCN/YagmusAppV1.0.0/main/screenshots/desktop-streak.png" 
-       alt="Desktop Streak" width="90%" style="border-radius:12px; margin:8px;"/>
 </p>
 
 ---

@@ -195,6 +195,7 @@ Technically solid — emotionally genuine 💜
 
 ## 📜 License
 
+This project is licensed under the [MIT License](https://choosealicense.com/licenses/mit/).
 This project was created for **personal use only.**  
 Redistribution or commercial use is **not permitted** without permission.  
 
